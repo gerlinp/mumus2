@@ -1,5 +1,5 @@
-import PageTemplate, { generateMetadata } from './(pages)/[slug]/page'
+import Image from 'next/image'
 
-export default PageTemplate
-
-export { generateMetadata }
+export default function Home() {
+  return <main>Hello world</main>
+}
