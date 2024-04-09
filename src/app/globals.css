@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --main-color: linear-gradient(to right, #cf6d45, #cfa144);
+}
+
+.main-bg-color {
+  background: var(--main-color);
+}
+
+.main-border-color {
+  border-color: var(--main-color);
+}
+
+.main-text-color {
+  color: var(--main-color);
+}
