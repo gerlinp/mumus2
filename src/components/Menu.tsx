@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 
+const links = [{ id: 1, title: 'Homepage', url: '' }]
+
 const Menu = () => {
   const [open, setOpen] = useState(false)
   return (
@@ -25,9 +27,9 @@ const Menu = () => {
         />
       )}
     </div>
-    {inks.map(item=>(
+    // {inks.map(item=>(
 
-    ))}
+    // ))}
   )
 }
 
