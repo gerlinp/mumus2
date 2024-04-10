@@ -1,6 +1,7 @@
 import React from 'react'
 import Menu from './Menu'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const user = false
 const Navbar = () => {
@@ -22,7 +23,11 @@ const Navbar = () => {
       <div className='flex md:hidden'>
         <Menu />
       </div>
-      <div className='hidden md:flex gap-4'>
+      {/* Right Links */}
+      <div className='hidden md:flex gap-4' items-center>
+        <div className='flex items-center gap-2 cursor-pointer bg-orange-300 px-1' rounded-md/>
+          <Image src='phone.png' alt='phone' width={20} height={20} />
+        </div>
         {!user ? (
           <Link href='/login'>Login</Link>
         ) : (
