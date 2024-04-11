@@ -2,6 +2,7 @@ import React from 'react'
 import Menu from './Menu'
 import Link from 'next/link'
 import Image from 'next/image'
+import CartIcon from './CartIcon'
 
 const user = false
 const Navbar = () => {
@@ -33,7 +34,7 @@ const Navbar = () => {
         ) : (
           <Link href='/orders'>Orders</Link>
         )}{' '}
-        <Link href='/'>CartIcon</Link>
+        <CartIcon/>
       </div>
     </div>
   )
