@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Playfair+Display&family=Source+Sans+Pro&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chango&family=Roboto+Slab:wght@500&family=Walter+Turncoat&display=swap');
+@font-face {
+  font-family: amsterdam-two;
+  src: url(amsterdam-two.ttf);
+}
+@font-face {
+  font-family: bangla-mn;
+  src: url(bangla-mn.ttf);
+}
+@font-face {
+  font-family: object-heavy;
+  src: url(ObjectSans-Heavy.otf);
+}
+@font-face {
+  font-family: object-regular;
+  src: url(ObjectSans-Regular.otf);
+} */
+
 :root {
   --main-color: linear-gradient(to right, #cf6d45, #cfa144);
 }
