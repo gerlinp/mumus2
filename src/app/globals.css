@@ -27,6 +27,10 @@
   --main-color: linear-gradient(to right, #cf6d45, #cfa144);
 }
 
+body {
+  background: var(--main-color);
+}
+
 .main-bg-color {
   background: var(--main-color);
 }

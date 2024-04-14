@@ -3,14 +3,14 @@ import Menu from './Menu'
 import Link from 'next/link'
 import Image from 'next/image'
 import CartIcon from './CartIcon'
-import './globals.css' // Import your component's CSS file
+// import './globals.css' // Import your component's CSS file
 
 const user = false
 const Navbar = () => {
   return (
     <div className='h-12 text-black-500 p-4 flex items-center justify-between border-b-2 border-b-red-500 uppercase'>
       {/* logo */}
-      <div style={{ fontFamily: 'Roboto, sans-serif' }}>
+      <div>
         <Link href='/'>Mumu's Pikliz</Link>
       </div>
       <div className='hidden md:flex gap-4'>
