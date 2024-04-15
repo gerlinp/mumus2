@@ -29,7 +29,7 @@ const Navbar = () => {
           className='flex items-center gap-2 cursor-pointer bg-orange-300 px-1'
           rounded-md
         >
-          <Image src='phone.png' alt='phone' width={20} height={20} />
+          <Image src='/phone.png' alt='phone' width={20} height={20} />
         </div>
       </div>
       {!user ? (
