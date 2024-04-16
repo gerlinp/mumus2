@@ -36,7 +36,8 @@ const Navbar = () => {
         <Link href='/login'>Login</Link>
       ) : (
         <Link href='/orders'>Orders</Link>
-      )}{' '}
+      )}
+      {' hello'}
       <CartIcon />
     </div>
   )
