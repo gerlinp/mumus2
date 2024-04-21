@@ -8,13 +8,13 @@ import CartIcon from './CartIcon'
 const user = false
 const Navbar = () => {
   return (
-    <div className='h-12 text-black-500 p-4 flex items-center justify-between border-b-2 border-b-red-500 uppercase'>
+    <div className='h-12 text-black-500 p-4 flex items-center justify-between border-b-2 border-b-red-500 uppercase md:h-24'>
       {/* logo */}
-      <div>
+      <div className='text-xl md:font-bold flex-1'>
         <Link href='/'>Mumu's Pikliz</Link>
       </div>
-      <div className='hidden md:flex gap-4'>
-        <Link href='/'>Homepage</Link>
+      <div className='hidden md:flex gap-4 flex-1'>
+        {/* <Link href='/'>Homepage</Link> */}
         <Link href='/'>Shop</Link>
         <Link href='/'>Locations</Link>
         <Link href='/'>Contact</Link>
@@ -24,21 +24,22 @@ const Navbar = () => {
         <Menu />
       </div>
       {/* Right Links */}
-      <div className='hidden md:flex gap-4' items-center>
+      <div className='hidden md:flex gap-4 flex-1' items-center>
         <div
           className='flex items-center gap-2 cursor-pointer bg-orange-300 px-1'
           rounded-md
         >
           <Image src='/phone.png' alt='phone' width={20} height={20} />
+          <span>123 456 7890</span>
         </div>
+
+        {!user ? (
+          <Link href='/login'>Login</Link>
+        ) : (
+          <Link href='/orders'>Orders</Link>
+        )}
+        <CartIcon />
       </div>
-      {!user ? (
-        <Link href='/login'>Login</Link>
-      ) : (
-        <Link href='/orders'>Orders</Link>
-      )}
-      {' hello'}
-      <CartIcon />
     </div>
   )
 }
