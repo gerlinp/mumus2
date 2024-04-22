@@ -8,7 +8,7 @@ import CartIcon from './CartIcon'
 const user = false
 const Navbar = () => {
   return (
-    <div className='h-12 text-black-500 p-4 flex items-center justify-between border-b-2 border-b-red-500 uppercase md:h-24'>
+    <div className='h-12 text-black-500 p-4 flex items-center justify-between border-b-2 border-b-red-500 uppercase md:h-24 lg:px-20 xl:px-40'>
       {/* logo */}
       <div className='text-xl md:font-bold flex-1'>
         <Link href='/'>Mumu's Pikliz</Link>
