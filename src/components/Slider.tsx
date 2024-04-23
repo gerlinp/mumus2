@@ -1,6 +1,24 @@
 import React from 'react'
 import Image from 'next/image'
 
+const data = [
+  {
+    id: 1,
+    title: 'The essentials you need',
+    image: '/slide1.png',
+  },
+  {
+    id: 2,
+    title: 'The essentials you need',
+    image: '/slide1.png',
+  },
+  {
+    id: 3,
+    title: 'The essentials you need',
+    image: '/slide1.png',
+  },
+]
+
 const Slider = () => {
   return (
     <div className='flex flex-col h-[calc(100vh-6rem)] md:h-[calc(100vh-9rem)]'>
