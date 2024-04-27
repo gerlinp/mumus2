@@ -33,16 +33,16 @@ const Slider = () => {
   }, [])
 
   return (
-    <div className='flex flex-col h-[calc(100vh-6rem)] md:h-[calc(100vh-9rem)]'>
+    <div className='flex flex-col h-[calc(100vh-6rem)] md:h-[calc(100vh-9rem)] lg:flex-row bg-green-900'>
       {/* TEXT CONTAINER */}
-      <div className='h-1/2 flex items-center justify-center flex-col gap-8 text-white font-bold'>
+      <div className='h-1/2 flex items-center justify-center flex-col gap-8 text-white font-bold lg:h-full lg:w-1/2'>
         <h1 className='text-5xl text-center uppercase p-4 md:text-6xl xl:text-7xl'>
           {data[currentSlide].title}
         </h1>
         <button className='bg-white text-red-500 py-4 px-8'>Order Now</button>
       </div>
       {/* IMAGE CONTAINER */}
-      <div className='w-full h-1/2 relative'>
+      <div className='w-full h-1/2 relative lg:h-full lg:w-1/2'>
         <Image
           src={data[currentSlide].image}
           alt='slide 1'

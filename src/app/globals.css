@@ -23,7 +23,7 @@
   src: url(ObjectSans-Regular.otf);
 } */
 
-:root {
+/* :root {
   --main-color: linear-gradient(to right, #cf6d45, #cfa144);
 }
 
@@ -41,4 +41,4 @@ body {
 
 .main-text-color {
   color: var(--main-color);
-}
+} */
