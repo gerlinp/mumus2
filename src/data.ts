@@ -110,3 +110,23 @@ export const featuredProdcuts: Products = [
     ],
   },
 ]
+
+type Menu = {
+  id: number
+  slug: string
+  title: string
+  desc?: string
+  img?: string
+  color: string
+}[]
+
+export const menu: Menu = [
+  {
+    id: 1,
+    slug: 'pikliz',
+    title: 'Pikliz',
+    desc: 'Mumu’s Pikliz blends fresh vegetables, spices and herbs to create the perfect addition to your family traditions',
+    img: '/temporary/m1.png',
+    color: 'white',
+  },
+]
