@@ -129,4 +129,20 @@ export const menu: Menu = [
     img: '/temporary/m1.png',
     color: 'white',
   },
+  {
+    id: 2,
+    slug: 'corn',
+    title: 'Spicy Corn',
+    desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas dicta repellat unde impedit maiores consequuntur ab',
+    img: '/temporary/m2.png',
+    color: 'white',
+  },
+  {
+    id: 3,
+    slug: 'epis',
+    title: 'EPIS',
+    desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas dicta repellat unde impedit maiores consequuntur ab',
+    img: '/temporary/m2.png',
+    color: 'white',
+  },
 ]
