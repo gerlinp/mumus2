@@ -127,7 +127,7 @@ export const menu: Menu = [
     title: 'Pikliz',
     desc: 'Mumu’s Pikliz blends fresh vegetables, spices and herbs to create the perfect addition to your family traditions',
     img: '/temporary/m1.png',
-    color: 'white',
+    color: 'black',
   },
   {
     id: 2,
