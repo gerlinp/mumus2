@@ -1,11 +1,11 @@
 import React from 'react'
 
-const Notifcation = () => {
+const Notification = () => {
   return (
-    <div className='h-12 bg-white text-red-500 px-4 flex items-center text-center  text-small justify-center md:text-base cursor-pointer'>
-      Free delivery for all orders over $50. Order your cooking essentials now!
+    <div className='h-12 bg-red-500 text-white px-4 flex items-center justify-center text-center text-sm md:text-base cursor-pointer'>
+      Free delivery for all orders over $50. Order your food now!
     </div>
   )
 }
 
-export default Notifcation
+export default Notification
