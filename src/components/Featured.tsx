@@ -1,17 +1,17 @@
 import React from 'react'
 import Image from 'next/image'
-import { featuredProdcuts } from '@/data'
+import { featuredProducts } from '@/data'
 
 const Featured = () => {
   return (
-    <div className='w-screen overflow-x-auto-scroll text-red-500'>
+    <div className='w-screen overflow-x-scroll text-red-500'>
       {/* Wrapper */}
       <div className='w-max flex'>
         {/* SINGLE ITEM */}
-        {featuredProdcuts.map((item) => (
+        {featuredProducts.map((item) => (
           <div
             key={item.id}
-            className='w-screen h-[60vh] flex flex-col items-center justify-around p-4 hover:bg-green-900 hover:text-white transition-all duration-300 md:w-[50vw] xl:w-[33vw] xl:h-90vh'
+            className='w-screen h-[60vh] flex flex-col items-center justify-around p-4 hover:bg-fuchsia-50 transition-all duration-300 md:w-[50vw] xl:w-[33vw] xl:h-[90vh]'
           >
             {/* IMAGE CONTAINER */}
             {item.img && (
