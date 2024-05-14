@@ -10,10 +10,10 @@ const CartPage = () => {
         <div className='flex items-center justify-between mb-4 overflow-scroll'>
           <Image src='/temporary/p1.png' alt='' width={100} height={100} />
           <div className=''>
-            <h1>sicilian</h1>
+            <h1 className='uppercase text-xl font-bold'>sicilian</h1>
             <span>Large</span>
           </div>
-          <h2>$79.99</h2>
+          <h2 className='font-bold'>$79.99</h2>
           <span>X</span>
         </div>
       </div>
