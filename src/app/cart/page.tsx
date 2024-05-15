@@ -5,16 +5,16 @@ const CartPage = () => {
   return (
     <div className='h-[calc(100vh-6rem)] md:h-[calc(100vh-9rem)] flex flex-col text-red-500'>
       {/* Products Container */}
-      <div className='h-1/2 p-4 flex flex-col justify-center'>
+      <div className='h-1/2 p-4 flex flex-col justify-center overflow-scroll'>
         {/* Single item */}
-        <div className='flex items-center justify-between mb-4 overflow-scroll'>
+        <div className='flex items-center justify-between mb-4'>
           <Image src='/temporary/p1.png' alt='' width={100} height={100} />
           <div className=''>
             <h1 className='uppercase text-xl font-bold'>sicilian</h1>
             <span>Large</span>
           </div>
           <h2 className='font-bold'>$79.99</h2>
-          <span>X</span>
+          <span className='cursor-pointer'>X</span>
         </div>
       </div>
       {/* Payment Container */}
