@@ -16,6 +16,26 @@ const CartPage = () => {
           <h2 className='font-bold'>$79.99</h2>
           <span className='cursor-pointer'>X</span>
         </div>
+        {/* Single item */}
+        <div className='flex items-center justify-between mb-4'>
+          <Image src='/temporary/p1.png' alt='' width={100} height={100} />
+          <div className=''>
+            <h1 className='uppercase text-xl font-bold'>sicilian</h1>
+            <span>Large</span>
+          </div>
+          <h2 className='font-bold'>$79.99</h2>
+          <span className='cursor-pointer'>X</span>
+        </div>
+        {/* Single item */}
+        <div className='flex items-center justify-between mb-4'>
+          <Image src='/temporary/p1.png' alt='' width={100} height={100} />
+          <div className=''>
+            <h1 className='uppercase text-xl font-bold'>sicilian</h1>
+            <span>Large</span>
+          </div>
+          <h2 className='font-bold'>$79.99</h2>
+          <span className='cursor-pointer'>X</span>
+        </div>
       </div>
       {/* Payment Container */}
       <div className='h-1/2 p-4 bg-fuschia-50'>
