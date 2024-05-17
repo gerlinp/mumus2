@@ -38,7 +38,7 @@ const CartPage = () => {
         </div>
       </div>
       {/* Payment Container */}
-      <div className='h-1/2 p-4 bg-fuschia-50'>
+      <div className='h-1/2 p-4 bg-fuschia-50 flex flex-col gap-4 justify-center'>
         <div>
           <span>Subtotal (3 items)</span>
           <span>$81.70</span>
