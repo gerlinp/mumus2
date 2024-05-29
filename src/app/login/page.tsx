@@ -3,10 +3,9 @@ import Image from 'next/image'
 
 const LoginPage = () => {
   return (
-    <div>
+    <div className='p-4 h-[calc(100vh)] md-h-[calc(100vh-9rem)] flex items-center justify-center'>
       {/* box */}
-
-      <div className=''>
+      <div className='h-full shadow-2xl rounded-md flex flex-col md:flex-row'>
         {/* Image Container */}
         <div className='relative'>
           <Image src='/loginBg.png' alt='fill' />
@@ -25,7 +24,7 @@ const LoginPage = () => {
             />
             <span>Sign in with Google</span>
           </button>
-          <button className='flex gap-4 p-4 ring-1 ring-orange-100 rounded-md'></button>
+          <button className='flex gap-4 p-4 ring-1 ring-blue-100 rounded-md'></button>
         </div>
       </div>
     </div>
