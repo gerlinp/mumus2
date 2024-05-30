@@ -24,7 +24,13 @@ const LoginPage = () => {
             />
             <span>Sign in with Google</span>
           </button>
-          <button className='flex gap-4 p-4 ring-1 ring-blue-100 rounded-md'></button>
+          <button
+            className='flex gap-4 p-4 ring-1 ring-blue-100 
+          rounded-md'
+          >
+            <Image src='/facebook.png' alt='' width={20} height={20} />
+            <span>Sign in with Facebook</span>
+          </button>
         </div>
       </div>
     </div>
