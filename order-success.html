@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Order received — Mumu's Pikliz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500;1,600&family=DM+Sans:wght@400;500;600;700&family=Italiana&family=Allura&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<script src="image-slot.js"></script>
+</head>
+<body>
+<div id="nav-root"></div>
+<main class="site-shift">
+  <div id="page-root"></div>
+</main>
+<div id="cart-drawer-root"></div>
+<div id="mobile-cart-bar-root"></div>
+
+<script src="js/data.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/landing.js"></script>
+<script>
+  applyPalette("drapo");
+
+  // Stable order number for the session — generated once, persisted so a
+  // refresh shows the same number.
+  function getOrderNumber() {
+    let n = sessionStorage.getItem("mumus_order_num");
+    if (!n) {
+      n = "MP-" + Math.floor(10000 + Math.random() * 89999);
+      sessionStorage.setItem("mumus_order_num", n);
+    }
+    return n;
+  }
+
+  // Snapshot the cart at load so the summary still renders after we clear it,
+  // then clear so a refresh doesn't double-show the same order.
+  let snapshot = { items: [], subtotal: 0 };
+  try {
+    const items = JSON.parse(localStorage.getItem("mumus_cart_v1") || "[]");
+    const subtotal = items.reduce((s, i) => s + i.qty * i.price, 0);
+    snapshot = { items, subtotal };
+  } catch {}
+  localStorage.removeItem("mumus_cart_v1");
+  window.dispatchEvent(new CustomEvent("cart-update"));
+
+  const summaryHtml = snapshot.items.length === 0 ? "" : `
+    <div class="success-summary">
+      <h4 class="aside-h" style="text-align:left">What you ordered</h4>
+      ${snapshot.items.map(i => `
+        <div class="success-line">
+          <span>${i.name} <span style="color:#4a4a52;font-style:italic">· ${i.size}</span></span>
+          <span style="color:#4a4a52">× ${i.qty}</span>
+          <span style="text-align:right">$${(i.qty * i.price).toFixed(0)}</span>
+        </div>
+      `).join("")}
+      <div class="success-line success-total">
+        <span>Subtotal</span>
+        <span></span>
+        <span style="text-align:right">$${snapshot.subtotal.toFixed(0)}</span>
+      </div>
+    </div>`;
+
+  document.getElementById("nav-root").innerHTML = navHtml();
+
+  document.getElementById("page-root").innerHTML = `
+    <section class="success-page">
+      <div class="container">
+        <div class="success-card">
+          <div class="success-emblem">
+            <img src="assets/logo.png" alt="Mumu's Pikliz" />
+          </div>
+
+          <span class="section-eyebrow success-eyebrow">— Mèsi anpil</span>
+          <h1 class="success-h1">
+            <span class="text-blue">We got your</span><br/>
+            <span class="gold-script">order.</span>
+          </h1>
+
+          <p class="success-lede">
+            Thank you for ordering from Mumu's Pikliz. We'll reach out within 24 hours to confirm
+            delivery, shipping, or pickup — and to finalize your total.
+          </p>
+
+          <div class="success-meta">
+            <div class="success-meta-row">
+              <span class="k">Order number</span>
+              <span class="mono">${getOrderNumber()}</span>
+            </div>
+            <div class="success-meta-row">
+              <span class="k">Reach us</span>
+              <span><a href="tel:+18573422433">857-342-2433</a> · <a href="mailto:hello@mumuspikliz.com">hello@mumuspikliz.com</a></span>
+            </div>
+            <div class="success-meta-row">
+              <span class="k">Response time</span>
+              <span>Within 24 hours · usually faster on weekends</span>
+            </div>
+          </div>
+
+          ${summaryHtml}
+
+          <div class="success-actions">
+            <a href="index.html" class="btn btn-primary">Back to home</a>
+            <a href="menu.html" class="btn btn-ghost">Order more →</a>
+          </div>
+
+          <p class="success-tag">
+            <span class="script success-bon">~ Bon Apeti ~</span>
+          </p>
+        </div>
+      </div>
+    </section>
+  ` + footerHtml();
+
+  bindCartUi();
+</script>
+</body>
+</html>
