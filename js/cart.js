@@ -40,7 +40,7 @@ function addToCart(product, size, qty) {
     });
   }
   saveCart(items);
-  openCart();
+  if (window.innerWidth > 900) openCart();
 }
 
 function setCartQty(key, qty) {
@@ -80,22 +80,39 @@ function navHtml({ currentPage = "home", onDark = false } = {}) {
           <a href="index.html" class="${currentPage === "home" ? "active" : ""}">Home</a>
           <a href="menu.html" class="${currentPage === "menu" ? "active" : ""}">Menu</a>
           <a href="index.html#locations">Locations</a>
-          <a href="index.html#story">About</a>
+          <a href="about.html" class="${currentPage === "about" ? "active" : ""}">About</a>
           <a href="index.html#contact">Contact</a>
         </div>
-        <button class="nav-cart-btn" data-cart-open>
-          Basket · <span data-cart-count>0</span>
+        <a href="https://www.instagram.com/mumus_pikliz" target="_blank" rel="noopener" class="nav-ig-link" aria-label="Instagram">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <button class="nav-cart-btn" data-cart-open aria-label="Open cart">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61H19a2 2 0 001.99-1.61L23 6H6"/></svg>
+          <span class="nav-cart-badge" data-cart-count>0</span>
+        </button>
+        <button class="nav-menu-btn" aria-label="Open menu" aria-expanded="false" data-menu-toggle>
+          <span></span><span></span><span></span>
         </button>
       </div>
-    </nav>`;
+    </nav>
+    <div class="nav-mobile-menu">
+      <a href="index.html" class="${currentPage === "home" ? "active" : ""}">Home</a>
+      <a href="menu.html" class="${currentPage === "menu" ? "active" : ""}">Menu</a>
+      <a href="index.html#locations">Locations</a>
+      <a href="about.html" class="${currentPage === "about" ? "active" : ""}">About</a>
+      <a href="index.html#contact">Contact</a>
+    </div>`;
 }
 
 function cartItemHtml(item) {
   return `
     <div class="cart-item" data-key="${item.key}">
       <div class="cart-item-img">
-        <image-slot id="product-${item.productId}" shape="rect" placeholder=""
-          style="width:100%;height:100%;display:block"></image-slot>
+        ${(() => { const pd = PRODUCTS.find(p => p.id === item.productId) || {};
+          return pd.image
+            ? `<img src="${pd.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;object-position:${pd.imagePosition||'center'};transform:scale(${pd.imageScale||1});display:block" />`
+            : `<image-slot id="product-${item.productId}" shape="rect" placeholder="" style="width:100%;height:100%;display:block"></image-slot>`;
+        })()}
       </div>
       <div>
         <div class="cart-item-name">${item.name}</div>
@@ -111,6 +128,23 @@ function cartItemHtml(item) {
     </div>`;
 }
 
+function checkoutSummaryHtml() {
+  const { items, subtotal } = cartSummary();
+  if (items.length === 0) {
+    return `<div class="co-empty">
+      <p>Your basket is empty.</p>
+      <a href="menu.html" class="btn btn-primary">Browse the menu →</a>
+    </div>`;
+  }
+  return `
+    <div class="co-summary-items">${items.map(cartItemHtml).join("")}</div>
+    <div class="co-summary-divider"></div>
+    <div class="co-summary-row co-summary-total">
+      <span>Subtotal</span><span></span><span>$${subtotal.toFixed(0)}</span>
+    </div>
+    <p class="co-summary-note">Shipping &amp; delivery calculated after confirmation.</p>`;
+}
+
 function cartDrawerHtml() {
   const { items, subtotal } = cartSummary();
   // Open state is baked into the initial markup so a re-render mid-open
@@ -119,7 +153,7 @@ function cartDrawerHtml() {
   const body = items.length === 0
     ? `<div class="cart-empty">
          <span class="hand">it's empty in here</span>
-         <p>Try a jar of Pikliz. Mumu insists.</p>
+         <p>Try Mumu's Pikliz. Mumu insists.</p>
        </div>`
     : items.map(cartItemHtml).join("");
 
@@ -130,7 +164,7 @@ function cartDrawerHtml() {
         <span>$${subtotal.toFixed(0)}</span>
       </div>
       <button class="btn btn-primary btn-block" data-cart-checkout>
-        Continue to checkout →
+        View Cart · ${items.length} ${items.length === 1 ? "item" : "items"}
       </button>
       <div class="cart-note">Shipping calculated at checkout. Local pickup free.</div>
     </div>`;
@@ -139,7 +173,10 @@ function cartDrawerHtml() {
     <div class="cart-overlay${openCls}" data-cart-close></div>
     <aside class="cart-drawer${openCls}">
       <div class="cart-head">
-        <h3>Your Basket</h3>
+        <div class="cart-head-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61H19a2 2 0 001.99-1.61L23 6H6"/></svg>
+          <h3>Your Basket</h3>
+        </div>
         <button class="cart-close" data-cart-close aria-label="Close">✕</button>
       </div>
       <div class="cart-body">${body}</div>
@@ -151,9 +188,9 @@ function mobileCartBarHtml() {
   const { count, subtotal } = cartSummary();
   if (count === 0) return "";
   return `
-    <button class="mobile-cart-bar" data-cart-open>
+    <button class="mobile-cart-bar" data-cart-go-checkout>
       <span class="mcb-left">
-        <span class="mcb-icon" aria-hidden="true">▢</span>
+        <svg class="mcb-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61H19a2 2 0 001.99-1.61L23 6H6"/></svg>
         View Cart
         <span class="mcb-count">· ${count}</span>
       </span>
@@ -181,21 +218,62 @@ function bindCartUi() {
     document.querySelectorAll("[data-cart-count]").forEach(el => { el.textContent = count; });
     if (drawerEl) drawerEl.innerHTML = cartDrawerHtml();
     if (mobileBarEl) mobileBarEl.innerHTML = mobileCartBarHtml();
+    const summaryEl = document.getElementById("checkout-summary-root");
+    if (summaryEl) summaryEl.innerHTML = checkoutSummaryHtml();
     syncOpenClasses();
   }
 
   window.addEventListener("cart-toggle", syncOpenClasses);
 
+  function closeNavMenu() {
+    const menu = document.querySelector(".nav-mobile-menu");
+    const toggle = document.querySelector("[data-menu-toggle]");
+    menu?.classList.remove("open");
+    toggle?.classList.remove("open");
+    toggle?.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("nav-menu-open");
+  }
+
   // Single delegated handler for every cart interaction on the page.
   document.addEventListener("click", (e) => {
+    const menuToggle = e.target.closest("[data-menu-toggle]");
+    if (menuToggle) {
+      const menu = document.querySelector(".nav-mobile-menu");
+      const isOpen = menu?.classList.toggle("open");
+      menuToggle.classList.toggle("open", isOpen);
+      menuToggle.setAttribute("aria-expanded", String(!!isOpen));
+      document.body.classList.toggle("nav-menu-open", !!isOpen);
+      return;
+    }
+
+    const anchorLink = e.target.closest("a[href*='#']");
+    if (anchorLink) {
+      const url = new URL(anchorLink.href);
+      if (url.hostname === location.hostname && url.pathname === location.pathname && url.hash) {
+        const target = document.querySelector(url.hash);
+        if (target) {
+          e.preventDefault();
+          closeNavMenu();
+          const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 88;
+          window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navH, behavior: "smooth" });
+          return;
+        }
+      }
+    }
+
+    if (e.target.closest(".nav-mobile-menu a")) { closeNavMenu(); }
+
+    const cartBarBtn = e.target.closest("[data-cart-go-checkout]");
+    if (cartBarBtn) { window.location.href = "checkout.html"; return; }
+
     const opener = e.target.closest("[data-cart-open]");
-    if (opener) { e.preventDefault(); openCart(); return; }
+    if (opener) { e.preventDefault(); closeNavMenu(); openCart(); return; }
 
     const closer = e.target.closest("[data-cart-close]");
     if (closer) { closeCart(); return; }
 
     const checkout = e.target.closest("[data-cart-checkout]");
-    if (checkout) { window.location.href = "order-success.html"; return; }
+    if (checkout) { window.location.href = "checkout.html"; return; }
 
     const qtyBtn = e.target.closest("[data-cart-qty]");
     if (qtyBtn) {

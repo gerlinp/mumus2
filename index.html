@@ -1,9 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mumu's Pikliz — Haitian condiments, jarred in Boston</title>
+<link rel="icon" href="assets/brand.png" />
+<title>Mumu's Pikliz - Haitian condiments, jarred in Boston</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500;1,600&family=DM+Sans:wght@400;500;600;700&family=Italiana&family=Allura&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -29,7 +30,7 @@
 
   document.getElementById("page-root").innerHTML =
     heroCoverHtml() +
-    storyHtml() +
+    brandIntroHtml() +
     productsSectionHtml() +
     recipesSectionHtml() +
     pressSectionHtml() +
@@ -38,6 +39,9 @@
 
   bindCartUi();
   bindContactForm();
+  initHeroCarousel();
+  if (window.instgrm) window.instgrm.Embeds.process();
 </script>
+<script async src="https://www.instagram.com/embed.js"></script>
 </body>
 </html>

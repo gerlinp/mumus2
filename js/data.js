@@ -6,57 +6,69 @@ const PRODUCTS = [
     name: "Pikliz",
     tagline: "The OG. Spicy slaw with attitude.",
     desc: "A Haitian spicy slaw made with cabbage, mixed veggies, hot peppers & salt all submerged in vinegar.",
+    image: "assets/pikliz01.jpg",
+    images: ["assets/pikliz01.jpg", "assets/pikliz02.jpg", "assets/pikliz03.jpg", "assets/pikliz04.jpg"],
     heat: 4,
     badge: "Bestseller",
+    tags: ["Topping", "Small batch", "No preservatives", "Haitian recipe"],
     sizes: [
       { label: "24 oz", price: 10 },
       { label: "32 oz", price: 15 },
       { label: "64 oz", price: 25 },
     ],
-    ingredients: "Cabbage, carrots, bell peppers, onion, scotch bonnet peppers, white vinegar, salt, herbs.",
+    ingredients: "Cabbage, mixed vegetables, hot peppers, salt & vinegar.",
   },
   {
     id: "corn",
     name: "Spicy Sweet Corn",
     tagline: "Sweet now, slow burn after.",
     desc: "A customer inspired spicy topping made with sweet corn, hot peppers, & salt submerged in vinegar. A more mild alternative than Pikliz.",
+    image: "assets/corn01.jpg",
+    images: ["assets/corn01.jpg", "assets/corn.jpg", "assets/corn02.jpg", "assets/corn03.jpg"],
     heat: 2,
     badge: "Customer pick",
+    tags: ["Topping", "Small batch", "No preservatives", "Mild heat"],
     sizes: [
       { label: "24 oz", price: 12 },
       { label: "32 oz", price: 18 },
       { label: "64 oz", price: 30 },
     ],
-    ingredients: "Sweet corn, hot peppers, white vinegar, salt, onion, herbs.",
+    ingredients: "Sweet corn, hot peppers, salt & vinegar.",
   },
   {
     id: "epis",
     name: "Epis",
     tagline: "The marinade that does the heavy lifting.",
     desc: "The perfect Haitian marinade made with scallions, parsley, green & red peppers, garlic, hot pepper, onion, olive oil, spices & herbs.",
+    image: "assets/epis01.jpg",
+    images: ["assets/epis01.jpg", "assets/epis.02.jpg", "assets/epis03.jpg", "assets/epis04.jpg"],
     heat: 3,
     badge: "Kitchen staple",
+    tags: ["Marinade", "Small batch", "No preservatives", "Haitian recipe"],
     sizes: [
       { label: "24 oz", price: 20 },
       { label: "32 oz", price: 30 },
       { label: "64 oz", price: 55 },
     ],
-    ingredients: "Scallions, parsley, green & red peppers, garlic, hot pepper, onion, olive oil, salt, spices, herbs.",
+    ingredients: "Scallions, parsley, peppers, garlic, onion, olive oil, spices & herbs.",
   },
   {
     id: "apron",
     name: "Aprons",
     tagline: "Wear the brand. Earn the splatters.",
     desc: "Heavyweight cotton apron with reinforced pocket and Mumu's Pikliz patch. Available in Blue or Red.",
+    image: "assets/apron01.jpg",
+    images: ["assets/apron01.jpg", "assets/apron02.jpg", "assets/apron03.jpg", "assets/apron04.jpg"],
     heat: 0,
     badge: "Merch",
+    tags: [],
     sizes: [
       { label: "Blue", price: 20 },
       { label: "Red", price: 20 },
     ],
     ingredients: "100% heavyweight cotton. Adjustable neck strap, waist ties, large front pocket.",
   },
-  {
+  /* {
     id: "apron-jar",
     name: "Aprons in Jar",
     tagline: "Gift-ready, jar-packaged.",
@@ -68,29 +80,32 @@ const PRODUCTS = [
       { label: "Red", price: 25 },
     ],
     ingredients: "100% heavyweight cotton apron. Packaged in a 32oz glass jar.",
-  },
+  }, */
 ];
 
-const HEAT_LABELS = ["mild", "easy", "medium", "spicy", "scotch bonnet"];
+const HEAT_LABELS = ["very mild", "mild", "medium", "spicy", "scotch bonnet"];
 
 const RECIPES = [
   {
     n: "01",
     title: "Mumu-Topped Griot",
-    body: "Crispy fried pork shoulder, golden plantains, and a generous spoon of Pikliz to cut the richness. The way mom serves it.",
+    body: "Jackfruit Gyro, fried plantains and Mumu's Pikliz!",
     tag: "weekend dinner",
+    reelUrl: "https://www.instagram.com/p/C3tIUv9vwbo/",
   },
   {
     n: "02",
     title: "Epis Marinated Chicken",
     body: "Rub Epis under the skin the night before. Roast. That's it. The herbs do everything you'd otherwise spend two hours on.",
     tag: "set & forget",
+    reelUrl: "https://www.instagram.com/reel/Cm_1UVNj2RO/",
   },
   {
     n: "03",
-    title: "Spicy Corn Tacos",
-    body: "Crispy white fish, queso fresco, a squeeze of lime, and our Spicy Sweet Corn instead of salsa. Surprise hit at every cookout.",
+    title: "Loaded Tater Tots",
+    body: "Loaded tater tots! Top your tots with cheese, turkey sausage, bacon bits, hummus, guacamole, and of course garnished with Mumu's Pikliz 😌 thank us later!",
     tag: "20 min weeknight",
+    reelUrl: "https://www.instagram.com/p/Ck6FEptOeA3/",
   },
 ];
 

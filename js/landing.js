@@ -2,26 +2,52 @@
 // point assembles them and replaces the placeholder root.
 
 function heroCoverHtml() {
+  const slides = [
+    { type: "img",   src: "assets/slide-01.jpg" },
+    { type: "video", src: "assets/slide-02.mp4" },
+    { type: "video", src: "assets/slide-03.mp4" },
+    { type: "video", src: "assets/slide-04.mp4" },
+    { type: "video", src: "assets/slide-05.mp4" },
+    { type: "video", src: "assets/slide-06.mp4" },
+    { type: "video", src: "assets/slide-07.mp4" },
+  ];
+  const slidesHtml = slides.map((s, i) => {
+    const media = s.type === "video"
+      ? `<video autoplay muted loop playsinline><source src="${s.src}" type="video/mp4"/></video>`
+      : `<img src="${s.src}" alt="" />`;
+    return `<div class="hero-slide${i === 0 ? " active" : ""}">${media}</div>`;
+  }).join("");
+
   return `
+    <div class="hero-cover-wrap">
     <section class="hero-cover">
-      <div class="hero-cover-photo">
-        <image-slot id="hero-photo" shape="rect"
-          placeholder="Drop hero photo (jars on counter)"
-          style="width:100%;height:100%;display:block"></image-slot>
-      </div>
+      <div class="hero-carousel">${slidesHtml}</div>
       <div class="hero-cover-inner">
-        <div class="hero-emblem-wrap">
-          <img src="assets/logo.png" alt="Mumu's Pikliz" class="hero-emblem-img" />
+        <div class="hero-old-logo">
+          <img src="assets/newlogo.png" alt="Mumu's Pikliz" class="hero-logo-mark" />
+          <img src="assets/logox.png" alt="" class="hero-logo-text" />
         </div>
-        <h1 class="hero-title">Mumu's Pikliz</h1>
-        <div class="hero-tag"><span class="gold-script-tag">Cooking</span> Essentials</div>
         <div class="hero-cover-buttons">
           <a href="menu.html" class="btn-cover btn-red">Menu</a>
-          <a href="#story" class="btn-cover btn-blue">About</a>
+          <a href="about.html" class="btn-cover btn-blue">About</a>
         </div>
       </div>
       <div class="scroll-hint">Scroll</div>
-    </section>`;
+    </section>
+    </div>`;
+}
+
+function initHeroCarousel() {
+  const slides = document.querySelectorAll(".hero-slide");
+  if (slides.length < 2) return;
+  let current = 0;
+  setInterval(() => {
+    slides[current].classList.remove("active");
+    current = (current + 1) % slides.length;
+    slides[current].classList.add("active");
+    const vid = slides[current].querySelector("video");
+    if (vid) { vid.currentTime = 0; vid.play().catch(() => {}); }
+  }, 5000);
 }
 
 function storyHtml() {
@@ -30,9 +56,7 @@ function storyHtml() {
       <div class="container">
         <div class="story-grid">
           <div class="story-photo">
-            <image-slot id="founder-photo" shape="rect"
-              placeholder="Drop founder photo"
-              style="width:100%;height:100%;display:block"></image-slot>
+            <img src="assets/profile.jpg" alt="Samantha Benoit, founder" style="width:100%;height:100%;object-fit:cover;display:block" />
           </div>
           <div>
             <div class="story-eyebrow">— Our Story</div>
@@ -58,6 +82,25 @@ function storyHtml() {
     </section>`;
 }
 
+function brandIntroHtml() {
+  return `
+    <section class="brand-intro">
+      <div class="container">
+        <div class="brand-intro-grid">
+          <div class="brand-intro-photo">
+            <img src="assets/about-01.jpg" alt="Dish garnished with Mumu's Pikliz" />
+          </div>
+          <div class="brand-intro-text">
+            <span class="section-eyebrow">— What we are</span>
+            <h2>A food product that will<br/><span class="gold-script">enhance your dishes.</span></h2>
+            <p>Mumu's Pikliz blends fresh vegetables, spices and herbs to create the perfect addition to your family traditions!</p>
+            <a href="about.html" class="btn btn-primary" style="margin-top:8px">Our story →</a>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
 function productCardHtml(product, variant = "default") {
   const startPrice = Math.min(...product.sizes.map(s => s.price));
   const variantClass = variant === "editorial" ? " editorial" : variant === "bold" ? " bold" : "";
@@ -65,40 +108,52 @@ function productCardHtml(product, variant = "default") {
     ? `<div class="heat-pill">${heatScaleHtml(product.heat)}<span>${HEAT_LABELS[product.heat - 1]}</span></div>`
     : "";
   return `
-    <article class="product-card${variantClass}">
+    <a class="product-card${variantClass}" href="product.html?id=${product.id}">
       <div class="product-photo">
         ${heatPill}
-        <div class="product-illust">${productIllustrationSvg(product.id)}</div>
-        <image-slot id="product-${product.id}" shape="rect" placeholder=""
-          style="width:100%;height:100%;display:block"></image-slot>
+        ${product.image
+          ? `<img src="${product.image}" alt="${product.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${product.imagePosition||'center'};transform:scale(${product.imageScale||1});display:block;z-index:2;pointer-events:none" />`
+          : `<div class="product-illust">${productIllustrationSvg(product.id)}</div><image-slot id="product-${product.id}" shape="rect" placeholder="" style="width:100%;height:100%;display:block"></image-slot>`}
       </div>
       <div class="product-name">${product.name}</div>
       <p class="product-desc">${product.desc}</p>
       <div class="product-price-row">
         <div class="product-price"><span class="from">From</span>$${startPrice}</div>
-        <a href="product.html?id=${product.id}" class="shop-link">Shop →</a>
+        <span class="shop-link">Shop →</span>
       </div>
-    </article>`;
+    </a>`;
 }
 
 function productsSectionHtml() {
+  const jars = PRODUCTS.filter(p => p.heat > 0);
+  const cards = jars.map(p => `
+    <a class="jar-card" href="product.html?id=${p.id}">
+      <div class="jar-card-photo">
+        ${p.heat > 0 ? `<div class="heat-pill">${heatScaleHtml(p.heat)}<span>${HEAT_LABELS[p.heat - 1]}</span></div>` : ""}
+        ${p.image
+          ? `<img src="${p.image}" alt="${p.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${p.imagePosition||'center'};transform:scale(${p.imageScale||1});display:block;z-index:2;pointer-events:none" />`
+          : `<div class="product-illust">${productIllustrationSvg(p.id)}</div><image-slot id="product-${p.id}" shape="rect" placeholder="" style="width:100%;height:100%;display:block"></image-slot>`}
+      </div>
+      <div class="jar-card-body">
+        <div class="jar-card-name">${p.name}</div>
+        <div class="jar-card-tag">${p.tagline}</div>
+      </div>
+    </a>`).join("");
+
   return `
     <section id="menu" class="section-flag-red menu-section">
       <div class="container">
         <div class="section-head">
           <div>
             <span class="section-eyebrow">— The Menu</span>
-            <h2>Five jars,<br/><span class="gold-script">one family recipe.</span></h2>
+            <h2>Save time.<br/><span class="gold-script">Buy Mumu's.</span></h2>
           </div>
           <p class="lede">
-            Three jars from the family recipe book — plus two aprons to wear while you cook.
-            Everything is <i>made to order</i>, never sitting on a shelf.
+            Something so simple, such a big difference.
             Browse the <a href="menu.html" style="text-decoration:underline">full menu</a>.
           </p>
         </div>
-        <div class="products">
-          ${PRODUCTS.map(p => productCardHtml(p)).join("")}
-        </div>
+        <div class="jar-cards">${cards}</div>
         <div style="text-align:center;margin-top:64px">
           <a href="menu.html" class="btn btn-primary">See the full menu →</a>
         </div>
@@ -110,10 +165,10 @@ function recipesSectionHtml() {
   const cards = RECIPES.map((r, i) => `
     <div class="recipe-card">
       <div class="recipe-num">${r.n} / 03</div>
-      <div class="recipe-photo">
-        <image-slot id="recipe-${i}" shape="rect"
-          placeholder="Drop ${r.title} photo"
-          style="width:100%;height:100%;display:block"></image-slot>
+      <div class="recipe-photo${r.reelUrl ? " has-embed" : ""}">
+        ${r.reelUrl
+          ? `<blockquote class="instagram-media" data-instgrm-permalink="${r.reelUrl}" data-instgrm-version="14" style="margin:0;max-width:100%;min-width:0;width:100%;border:0"></blockquote>`
+          : `<image-slot id="recipe-${i}" shape="rect" placeholder="Drop ${r.title} photo" style="width:100%;height:100%;display:block"></image-slot>`}
       </div>
       <h3>${r.title}</h3>
       <p>${r.body}</p>
@@ -129,8 +184,7 @@ function recipesSectionHtml() {
             <h2>Spoon it on<br/><span class="gold-script">everything.</span></h2>
           </div>
           <p class="lede">
-            Three dinners that get the jar opened most weeks. Recipe-tested by Mumu, eaten by her
-            family on Sundays.
+            Three ways to use Mumu's — from weeknight dinners to weekend spreads.
           </p>
         </div>
         <div class="recipe-grid">${cards}</div>
@@ -214,27 +268,28 @@ function locationsSectionHtml() {
               <ul class="contact-list">
                 <li><span class="k">Phone</span><a href="tel:+18573422433">857-342-2433</a></li>
                 <li><span class="k">Email</span><a href="mailto:hello@mumuspikliz.com">hello@mumuspikliz.com</a></li>
-                <li><span class="k">Instagram</span><a href="#">@mumuspikliz</a></li>
+                <li><span class="k">Instagram</span><a href="https://www.instagram.com/mumus_pikliz" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:5px"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@mumus_pikliz</a></li>
                 <li><span class="k">Hours</span><span>Sat &amp; Sun, 10a — 4p ET</span></li>
               </ul>
             </div>
             <form class="contact-form" data-contact-form>
               <label class="cf-row">
                 <span class="cf-label">Name</span>
-                <input class="cf-input" type="text" placeholder="Your name" required />
+                <input class="cf-input" name="name" type="text" placeholder="Your name" required />
               </label>
               <label class="cf-row">
                 <span class="cf-label">Email</span>
-                <input class="cf-input" type="email" placeholder="you@example.com" required />
+                <input class="cf-input" name="email" type="email" placeholder="you@example.com" required />
               </label>
               <label class="cf-row">
                 <span class="cf-label">Phone</span>
-                <input class="cf-input" type="tel" placeholder="(555) 555-5555" />
+                <input class="cf-input" name="phone" type="tel" placeholder="(555) 555-5555" />
               </label>
               <label class="cf-row">
                 <span class="cf-label">What you need</span>
-                <textarea class="cf-input cf-textarea" rows="4"
-                  placeholder="Which jars, sizes, delivery option, anything else…" required></textarea>
+                <textarea class="cf-input cf-textarea" name="message" rows="4"
+                  placeholder="Which products, sizes, delivery option, anything else…" required></textarea>
               </label>
               <button type="submit" class="btn btn-primary">Send →</button>
             </form>
@@ -250,9 +305,11 @@ function footerHtml() {
       <div class="container">
         <div class="footer-grid">
           <div>
-            <div class="footer-logo">Mumu's Pikliz</div>
-            <p>Haitian condiments, jarred in small batches by Samantha Benoit since 2019.
-              Shipped from Boston, with love, all over the U.S.</p>
+            <div class="footer-logo">
+              <img src="assets/logox.png" alt="Mumu's Pikliz" />
+            </div>
+            <p>Fresh Haitian condiments made in Boston.
+              Delivery covers the South Shore and Boston area; shipping reaches anywhere in the U.S.</p>
           </div>
           <div>
             <h4>Shop</h4>
@@ -268,7 +325,7 @@ function footerHtml() {
             <div class="footer-links">
               <a href="index.html#locations">Locations</a>
               <a href="index.html#recipes">Recipes</a>
-              <a href="index.html#story">About</a>
+              <a href="about.html">About</a>
             </div>
           </div>
           <div>
@@ -276,23 +333,43 @@ function footerHtml() {
             <div class="footer-links">
               <a href="tel:+18573422433">857-342-2433</a>
               <a href="mailto:hello@mumuspikliz.com">hello@mumuspikliz.com</a>
-              <a href="#">@mumuspikliz</a>
+              <a href="https://www.instagram.com/mumus_pikliz" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:5px"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@mumus_pikliz</a>
             </div>
           </div>
         </div>
         <div class="footer-bottom">
           <span>© 2026 Mumu's Pikliz · All rights reserved</span>
           <span>Made in Boston · Roots in Haiti</span>
+          <span>Painted with pixels, wired with logic · By <a href="https://gerlinpl.com/" target="_blank" rel="noopener">Gerlinpl</a></span>
         </div>
       </div>
     </footer>`;
 }
 
 function bindContactForm() {
-  document.addEventListener("submit", (e) => {
-    if (e.target.matches("[data-contact-form]")) {
-      e.preventDefault();
-      window.location.href = "order-success.html";
+  document.addEventListener("submit", async (e) => {
+    if (!e.target.matches("[data-contact-form]")) return;
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector("[type=submit]");
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Sending…";
+    try {
+      const data = Object.fromEntries(new FormData(form));
+      await fetch("https://formsubmit.co/ajax/mumuspikliz@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ ...data, _subject: `New Message — ${data.name} · ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` }),
+      });
+      form.reset();
+      btn.textContent = "Sent ✓";
+      setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 4000);
+    } catch {
+      btn.textContent = originalText;
+      btn.disabled = false;
+      alert("Something went wrong. Please reach us at hello@mumuspikliz.com or call 857-342-2433.");
     }
   });
 }

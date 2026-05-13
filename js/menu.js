@@ -8,12 +8,11 @@ function menuHeroHtml() {
       <div class="container">
         <span class="section-eyebrow">— The Menu</span>
         <h1 class="menu-h1">
-          <i>Five jars,</i><br/>
-          <span class="gold-script-big">one family recipe.</span>
+          <i>Three recipes, one apron.</i><br/>
+          <span class="gold-script-big">Haitian roots.</span>
         </h1>
         <p class="menu-lede">
-          Small-batch, made to order, jarred in Boston. Click any item to read more, choose a
-          size, and add to your basket — or order direct via the form below.
+          Fresh made in Boston, available in multiple sizes. Click any item to choose a size and add to your basket.
         </p>
       </div>
     </section>`;
@@ -36,9 +35,9 @@ function menuItemHtml(product, index) {
   return `
     <article class="menu-item${flipped}" id="${product.id}" data-product-id="${product.id}" data-qty="1" data-size-ix="0">
       <div class="menu-item-photo">
-        <div class="product-illust">${productIllustrationSvg(product.id)}</div>
-        <image-slot id="product-${product.id}" shape="rect" placeholder=""
-          style="width:100%;height:100%;display:block"></image-slot>
+        ${product.image
+          ? `<img src="${product.image}" alt="${product.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${product.imagePosition||'center'};transform:scale(${product.imageScale||1});display:block;pointer-events:none" />`
+          : `<div class="product-illust">${productIllustrationSvg(product.id)}</div><image-slot id="product-${product.id}" shape="rect" placeholder="" style="width:100%;height:100%;display:block"></image-slot>`}
       </div>
 
       <div class="menu-item-info">
@@ -94,27 +93,28 @@ function menuOrderFormHtml() {
             <ul class="contact-list">
               <li><span class="k">Phone</span><a href="tel:+18573422433">857-342-2433</a></li>
               <li><span class="k">Email</span><a href="mailto:hello@mumuspikliz.com">hello@mumuspikliz.com</a></li>
-              <li><span class="k">Instagram</span><a href="#">@mumuspikliz</a></li>
+              <li><span class="k">Instagram</span><a href="https://www.instagram.com/mumus_pikliz" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:5px"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@mumus_pikliz</a></li>
               <li><span class="k">Hours</span><span>Sat &amp; Sun, 10a — 4p ET</span></li>
             </ul>
           </div>
           <form class="contact-form" data-contact-form>
             <label class="cf-row">
               <span class="cf-label">Name</span>
-              <input class="cf-input" type="text" placeholder="Your name" required />
+              <input class="cf-input" name="name" type="text" placeholder="Your name" required />
             </label>
             <label class="cf-row">
               <span class="cf-label">Email</span>
-              <input class="cf-input" type="email" placeholder="you@example.com" required />
+              <input class="cf-input" name="email" type="email" placeholder="you@example.com" required />
             </label>
             <label class="cf-row">
               <span class="cf-label">Phone</span>
-              <input class="cf-input" type="tel" placeholder="(555) 555-5555" />
+              <input class="cf-input" name="phone" type="tel" placeholder="(555) 555-5555" />
             </label>
             <label class="cf-row">
               <span class="cf-label">What you need</span>
-              <textarea class="cf-input cf-textarea" rows="4"
-                placeholder="Which jars, sizes, delivery option, anything else…" required></textarea>
+              <textarea class="cf-input cf-textarea" name="message" rows="4"
+                placeholder="Which products, sizes, delivery option, anything else…" required></textarea>
             </label>
             <button type="submit" class="btn btn-primary">Send →</button>
           </form>

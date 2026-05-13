@@ -14,11 +14,12 @@ function pdpHtml(product) {
        </div>`
     : "";
 
+  const imgs = product.images || (product.image ? [product.image] : []);
   const thumbs = [0, 1, 2, 3].map(i => `
     <div class="pdp-thumb${i === 0 ? " active" : ""}" data-thumb-ix="${i}">
-      <div class="product-illust">${productIllustrationSvg(product.id)}</div>
-      <image-slot id="pdp-${product.id}-thumb-${i}" shape="rect" placeholder=""
-        style="width:100%;height:100%;display:block"></image-slot>
+      ${imgs[i]
+        ? `<img src="${imgs[i]}" alt="${product.name} ${i+1}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${product.imagePosition||'center'};transform:scale(${product.imageScale||1});display:block;pointer-events:none" />`
+        : `<div class="product-illust">${productIllustrationSvg(product.id)}</div><image-slot id="pdp-${product.id}-thumb-${i}" shape="rect" placeholder="" style="width:100%;height:100%;display:block"></image-slot>`}
     </div>`).join("");
 
   return `
@@ -31,9 +32,9 @@ function pdpHtml(product) {
         <div class="pdp-grid">
           <div>
             <div class="pdp-gallery">
-              <div class="product-illust">${productIllustrationSvg(product.id)}</div>
-              <image-slot id="pdp-${product.id}-0" shape="rect" placeholder=""
-                style="width:100%;height:100%;display:block" data-pdp-main></image-slot>
+              ${product.image
+                ? `<img src="${product.image}" alt="${product.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${product.imagePosition||'center'};transform:scale(${product.imageScale||1});display:block;pointer-events:none" data-pdp-main />`
+                : `<div class="product-illust">${productIllustrationSvg(product.id)}</div><image-slot id="pdp-${product.id}-0" shape="rect" placeholder="" style="width:100%;height:100%;display:block" data-pdp-main></image-slot>`}
             </div>
             <div class="pdp-thumbs">${thumbs}</div>
           </div>
@@ -43,12 +44,7 @@ function pdpHtml(product) {
             <h1>${product.name}</h1>
             <p class="pdp-tagline">${product.tagline}</p>
 
-            <div class="pdp-meta">
-              <span class="meta-chip">Haitian recipe</span>
-              <span class="meta-chip">Small batch</span>
-              <span class="meta-chip">No preservatives</span>
-              <span class="meta-chip">Shelf-stable</span>
-            </div>
+            ${(product.tags || []).length ? `<div class="pdp-meta">${(product.tags).map(t => `<span class="meta-chip">${t}</span>`).join("")}</div>` : ""}
 
             <div class="size-picker">${sizes}</div>
 
@@ -139,6 +135,11 @@ function bindPdpInteractions() {
       section.querySelectorAll(".pdp-thumb").forEach(t => t.classList.remove("active"));
       thumb.classList.add("active");
       section.dataset.activeImg = thumb.dataset.thumbIx;
+      const mainImg = section.querySelector("[data-pdp-main]");
+      const thumbImg = thumb.querySelector("img");
+      if (mainImg && mainImg.tagName === "IMG" && thumbImg) {
+        mainImg.src = thumbImg.src;
+      }
       return;
     }
 
