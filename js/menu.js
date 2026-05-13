@@ -25,9 +25,8 @@ function menuItemHtml(product, index) {
     : "";
   const sizes = product.sizes.map((s, i) => `
     <button class="menu-size${i === 0 ? " active" : ""}" data-size-ix="${i}" data-price="${s.price}">
-      <span class="ms-dots"></span>
       <span class="ms-label">${s.label}</span>
-      <span class="ms-price">$${s.price}.00</span>
+      <span class="ms-price">$${s.price}</span>
     </button>`).join("");
 
   const firstPrice = product.sizes[0].price;

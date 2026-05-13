@@ -60,18 +60,12 @@ function pdpHtml(product) {
             </div>
 
             <div class="pdp-details">
-              <div class="detail-row">
-                <div class="k">Ingredients</div>
-                <div class="v">${product.ingredients}</div>
-              </div>
+              ${product.ingredients ? `<div class="detail-row"><div class="k">Ingredients</div><div class="v">${product.ingredients}</div></div>` : ""}
               <div class="detail-row">
                 <div class="k">Description</div>
                 <div class="v">${product.desc}</div>
               </div>
-              <div class="detail-row">
-                <div class="k">Storage</div>
-                <div class="v">Refrigerate after opening. Best within 60 days of opening.</div>
-              </div>
+              ${product.storage ? `<div class="detail-row"><div class="k">Storage</div><div class="v">${product.storage}</div></div>` : ""}
               <div class="detail-row">
                 <div class="k">Shipping</div>
                 <div class="v">Ships within 3–5 business days. Local Boston pickup available — DM @mumuspikliz.</div>

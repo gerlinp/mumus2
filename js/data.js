@@ -17,6 +17,7 @@ const PRODUCTS = [
       { label: "64 oz", price: 25 },
     ],
     ingredients: "Cabbage, mixed vegetables, hot peppers, salt & vinegar.",
+    storage: "Refrigerate after opening. Best within 60 days of opening.",
   },
   {
     id: "corn",
@@ -34,6 +35,7 @@ const PRODUCTS = [
       { label: "64 oz", price: 30 },
     ],
     ingredients: "Sweet corn, hot peppers, salt & vinegar.",
+    storage: "Refrigerate after opening. Best within 60 days of opening.",
   },
   {
     id: "epis",
@@ -51,13 +53,14 @@ const PRODUCTS = [
       { label: "64 oz", price: 55 },
     ],
     ingredients: "Scallions, parsley, peppers, garlic, onion, olive oil, spices & herbs.",
+    storage: "Refrigerate after opening. Best within 60 days of opening.",
   },
   {
     id: "apron",
     name: "Aprons",
     tagline: "Wear the brand. Earn the splatters.",
     desc: "Heavyweight cotton apron with reinforced pocket and Mumu's Pikliz patch. Available in Blue or Red.",
-    image: "assets/apron01.jpg",
+    image: "assets/apron02.jpg",
     images: ["assets/apron01.jpg", "assets/apron02.jpg", "assets/apron03.jpg", "assets/apron04.jpg"],
     heat: 0,
     badge: "Merch",
@@ -66,7 +69,8 @@ const PRODUCTS = [
       { label: "Blue", price: 20 },
       { label: "Red", price: 20 },
     ],
-    ingredients: "100% heavyweight cotton. Adjustable neck strap, waist ties, large front pocket.",
+    ingredients: null,
+    storage: null,
   },
   /* {
     id: "apron-jar",
@@ -138,6 +142,8 @@ const LOCATIONS = [
     tag: "Popportunity",
     name: "Starlight Square",
     addr: "84 Bishop Allen Drive\nCentral Square, Cambridge MA",
+    mapsUrl: "https://maps.google.com/?q=84+Bishop+Allen+Drive+Cambridge+MA",
+    infoUrl: null,
     schedule: [
       { day: "Sat", time: "11a — 4p" },
       { day: "Sun", time: "12p — 4p" },
@@ -147,12 +153,16 @@ const LOCATIONS = [
     tag: "Summer Market",
     name: "Brighton",
     addr: "30 Chestnut Hill Ave\nBrighton, MA 02135",
+    mapsUrl: "https://maps.google.com/?q=30+Chestnut+Hill+Ave+Brighton+MA+02135",
+    infoUrl: null,
     schedule: [{ day: "Sun", time: "10a — 2p" }],
   },
   {
     tag: "Summer Market",
     name: "Roslindale",
     addr: "4236 Washington St\nRoslindale, MA 02131",
+    mapsUrl: "https://maps.google.com/?q=4236+Washington+St+Roslindale+MA+02131",
+    infoUrl: null,
     schedule: [{ day: "Sat", time: "9a — 1:30p" }],
   },
 ];

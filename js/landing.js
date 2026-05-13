@@ -236,6 +236,10 @@ function locationsSectionHtml() {
             <span class="day">${s.day}</span>
             <span class="time">${s.time}</span>
           </div>`).join("")}
+        <div class="loc-actions">
+          ${l.infoUrl ? `<a class="btn btn-ghost loc-btn" href="${l.infoUrl}" target="_blank" rel="noopener">Info</a>` : ""}
+          <a class="btn btn-ghost loc-btn" href="${l.mapsUrl}" target="_blank" rel="noopener">Directions →</a>
+        </div>
       </div>
     </div>`).join("");
 
