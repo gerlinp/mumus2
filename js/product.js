@@ -1,6 +1,7 @@
 // PDP: gallery (1 main + 4 thumbs), size picker, qty stepper, related grid.
 
 function pdpHtml(product) {
+  const soldOut = product.inStock === false;
   const sizes = product.sizes.map((s, i) => `
     <button class="size-opt${i === 0 ? " active" : ""}" data-size-ix="${i}" data-price="${s.price}">
       <div class="label">${s.label}</div>
@@ -45,6 +46,7 @@ function pdpHtml(product) {
             <p class="pdp-tagline">${product.tagline}</p>
 
             ${(product.tags || []).length ? `<div class="pdp-meta">${(product.tags).map(t => `<span class="meta-chip">${t}</span>`).join("")}</div>` : ""}
+            ${soldOut ? `<div class="sold-out-badge" style="position:static;display:inline-block;margin-bottom:16px">Sold out</div>` : ""}
 
             <div class="size-picker">${sizes}</div>
 
@@ -54,8 +56,8 @@ function pdpHtml(product) {
                 <span class="val" data-qty-val>1</span>
                 <button type="button" data-qty-delta="1">+</button>
               </div>
-              <button class="btn btn-primary btn-block" data-add-to-cart>
-                Add to basket · $<span data-line-total>${product.sizes[0].price}</span>
+              <button class="btn btn-primary btn-block" data-add-to-cart${soldOut ? " disabled" : ""}>
+                ${soldOut ? "Sold out" : `Add to basket · $<span data-line-total>${product.sizes[0].price}</span>`}
               </button>
             </div>
 
@@ -98,7 +100,8 @@ function bindPdpInteractions() {
     const qty = parseInt(section.dataset.qty, 10);
     const product = PRODUCTS.find(p => p.id === section.dataset.productId);
     const price = product.sizes[sizeIx].price;
-    section.querySelector("[data-line-total]").textContent = (price * qty).toFixed(0);
+    const lineTotal = section.querySelector("[data-line-total]");
+    if (lineTotal) lineTotal.textContent = (price * qty).toFixed(0);
   }
 
   document.addEventListener("click", (e) => {
@@ -140,6 +143,7 @@ function bindPdpInteractions() {
     const addBtn = e.target.closest("[data-add-to-cart]");
     if (addBtn && section.contains(addBtn)) {
       const product = PRODUCTS.find(p => p.id === section.dataset.productId);
+      if (product.inStock === false) return;
       const size = product.sizes[parseInt(section.dataset.sizeIx, 10)];
       const qty = parseInt(section.dataset.qty, 10);
       addToCart(product, size, qty);

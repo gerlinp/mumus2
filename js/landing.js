@@ -104,13 +104,15 @@ function brandIntroHtml() {
 function productCardHtml(product, variant = "default") {
   const startPrice = Math.min(...product.sizes.map(s => s.price));
   const variantClass = variant === "editorial" ? " editorial" : variant === "bold" ? " bold" : "";
+  const soldOut = product.inStock === false;
   const heatPill = product.heat > 0
     ? `<div class="heat-pill">${heatScaleHtml(product.heat)}<span>${HEAT_LABELS[product.heat - 1]}</span></div>`
     : "";
   return `
-    <a class="product-card${variantClass}" href="product.html?id=${product.id}">
+    <a class="product-card${variantClass}${soldOut ? " sold-out" : ""}" href="product.html?id=${product.id}">
       <div class="product-photo">
         ${heatPill}
+        ${soldOut ? `<div class="sold-out-badge">Sold out</div>` : ""}
         ${product.image
           ? `<img src="${product.image}" alt="${product.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${product.imagePosition||'center'};transform:scale(${product.imageScale||1});display:block;z-index:2;pointer-events:none" />`
           : `<div class="product-illust">${productIllustrationSvg(product.id)}</div><image-slot id="product-${product.id}" shape="rect" placeholder="" style="width:100%;height:100%;display:block"></image-slot>`}
@@ -119,7 +121,7 @@ function productCardHtml(product, variant = "default") {
       <p class="product-desc">${product.desc}</p>
       <div class="product-price-row">
         <div class="product-price"><span class="from">From</span>$${startPrice}</div>
-        <span class="shop-link">Shop →</span>
+        <span class="shop-link">${soldOut ? "Sold out" : "Shop →"}</span>
       </div>
     </a>`;
 }
@@ -127,9 +129,10 @@ function productCardHtml(product, variant = "default") {
 function productsSectionHtml() {
   const jars = PRODUCTS.filter(p => p.heat > 0);
   const cards = jars.map(p => `
-    <a class="jar-card" href="product.html?id=${p.id}">
+    <a class="jar-card${p.inStock === false ? " sold-out" : ""}" href="product.html?id=${p.id}">
       <div class="jar-card-photo">
         ${p.heat > 0 ? `<div class="heat-pill">${heatScaleHtml(p.heat)}<span>${HEAT_LABELS[p.heat - 1]}</span></div>` : ""}
+        ${p.inStock === false ? `<div class="sold-out-badge">Sold out</div>` : ""}
         ${p.image
           ? `<img src="${p.image}" alt="${p.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${p.imagePosition||'center'};transform:scale(${p.imageScale||1});display:block;z-index:2;pointer-events:none" />`
           : `<div class="product-illust">${productIllustrationSvg(p.id)}</div><image-slot id="product-${p.id}" shape="rect" placeholder="" style="width:100%;height:100%;display:block"></image-slot>`}
@@ -225,38 +228,19 @@ function pressSectionHtml() {
 }
 
 function locationsSectionHtml() {
-  const cards = LOCATIONS.map(l => `
-    <div class="loc-card">
-      <div class="loc-tag">${l.tag}</div>
-      <div class="loc-name">${l.name}</div>
-      <div class="loc-addr">${l.addr.replace(/\n/g, "<br/>")}</div>
-      <div style="margin-top:auto">
-        ${l.schedule.map(s => `
-          <div class="loc-schedule">
-            <span class="day">${s.day}</span>
-            <span class="time">${s.time}</span>
-          </div>`).join("")}
-        <div class="loc-actions">
-          ${l.infoUrl ? `<a class="btn btn-ghost loc-btn" href="${l.infoUrl}" target="_blank" rel="noopener">Info</a>` : ""}
-          <a class="btn btn-ghost loc-btn" href="${l.mapsUrl}" target="_blank" rel="noopener">Directions →</a>
-        </div>
-      </div>
-    </div>`).join("");
-
   return `
     <section class="locations section-flag-blue" id="locations">
       <div class="container">
         <div class="section-head">
           <div>
-            <span class="section-eyebrow">— Find us</span>
-            <h2>Retail &amp; pickup<br/><span class="gold-script">around Boston.</span></h2>
+            <span class="section-eyebrow">— Order</span>
+            <h2>Pickup &amp;<br/><span class="gold-script">delivery.</span></h2>
           </div>
           <p class="lede">
-            Two summer markets and a Cambridge popup. Tap a card for the weekly schedule —
-            or <i>DM @mumuspikliz</i> if you'd rather we hand-deliver on the South Shore.
+            No storefront or markets right now — just pickup and delivery around the South Shore
+            and Boston area. Reach out below or <i>DM @mumuspikliz</i> to arrange yours.
           </p>
         </div>
-        <div class="loc-grid">${cards}</div>
 
         <div class="contact-block" id="contact">
           <div class="contact-grid">
@@ -267,7 +251,7 @@ function locationsSectionHtml() {
               </h2>
               <p class="lede" style="justify-self:start;margin-bottom:32px">
                 Phone calls. Emails. <i>DMs that start with "how do I get a jar."</i>
-                Tell us what you need and we'll sort delivery, shipping, or Saturday-market pickup.
+                Tell us what you need and we'll sort delivery, shipping, or pickup.
               </p>
               <ul class="contact-list">
                 <li><span class="k">Phone</span><a href="tel:+18573422433">857-342-2433</a></li>

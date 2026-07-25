@@ -20,6 +20,7 @@ function menuHeroHtml() {
 
 function menuItemHtml(product, index) {
   const flipped = index % 2 === 1 ? " flipped" : "";
+  const soldOut = product.inStock === false;
   const heatMeta = product.heat > 0
     ? `<div class="menu-item-heat">${heatScaleHtml(product.heat)}<span>${HEAT_LABELS[product.heat - 1]}</span></div>`
     : "";
@@ -32,8 +33,9 @@ function menuItemHtml(product, index) {
   const firstPrice = product.sizes[0].price;
 
   return `
-    <article class="menu-item${flipped}" id="${product.id}" data-product-id="${product.id}" data-qty="1" data-size-ix="0">
+    <article class="menu-item${flipped}${soldOut ? " sold-out" : ""}" id="${product.id}" data-product-id="${product.id}" data-qty="1" data-size-ix="0">
       <div class="menu-item-photo">
+        ${soldOut ? `<div class="sold-out-badge">Sold out</div>` : ""}
         ${product.image
           ? `<img src="${product.image}" alt="${product.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${product.imagePosition||'center'};transform:scale(${product.imageScale||1});display:block;pointer-events:none" />`
           : `<div class="product-illust">${productIllustrationSvg(product.id)}</div><image-slot id="product-${product.id}" shape="rect" placeholder="" style="width:100%;height:100%;display:block"></image-slot>`}
@@ -55,8 +57,8 @@ function menuItemHtml(product, index) {
             <span class="val" data-qty-val>1</span>
             <button type="button" data-qty-delta="1" aria-label="Increase quantity">+</button>
           </div>
-          <button class="btn btn-primary" data-add-to-cart>
-            Add — $<span data-line-total>${firstPrice}</span>
+          <button class="btn btn-primary" data-add-to-cart${soldOut ? " disabled" : ""}>
+            ${soldOut ? "Sold out" : `Add — $<span data-line-total>${firstPrice}</span>`}
           </button>
           <a href="product.html?id=${product.id}" class="btn btn-ghost">Details →</a>
         </div>
@@ -128,7 +130,8 @@ function bindMenuInteractions() {
     const qty = parseInt(article.dataset.qty, 10);
     const product = PRODUCTS.find(p => p.id === article.dataset.productId);
     const price = product.sizes[sizeIx].price;
-    article.querySelector("[data-line-total]").textContent = (price * qty).toFixed(0);
+    const lineTotal = article.querySelector("[data-line-total]");
+    if (lineTotal) lineTotal.textContent = (price * qty).toFixed(0);
   }
 
   document.addEventListener("click", (e) => {
@@ -158,6 +161,7 @@ function bindMenuInteractions() {
     if (addBtn) {
       const article = addBtn.closest(".menu-item");
       const product = PRODUCTS.find(p => p.id === article.dataset.productId);
+      if (product.inStock === false) return;
       const size = product.sizes[parseInt(article.dataset.sizeIx, 10)];
       const qty = parseInt(article.dataset.qty, 10);
       addToCart(product, size, qty);

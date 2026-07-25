@@ -217,7 +217,7 @@ body.nav-menu-open { overflow: hidden; }
 }
 
 /* container */
-.container { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
+.container { max-width: 1240px; margin: 0 auto; padding: 0 clamp(24px, 5vw, 96px); }
 section { padding: 120px 0; }
 
 /* Haitian flag section variants — alternating blue & red sections */
@@ -622,21 +622,41 @@ section { padding: 120px 0; }
 .hero-cover-inner {
   position: relative; z-index: 3;
   text-align: center;
-  padding: clamp(32px, 8vw, 80px) clamp(16px, 5vw, 40px);
+  padding: clamp(12px, 5vh, 56px) clamp(16px, 5vw, 40px);
   max-width: 880px;
   width: 100%;
-  display: flex; flex-direction: column; align-items: center; gap: 36px;
+  max-height: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: clamp(12px, 3vh, 36px);
 }
 .hero-old-logo {
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  display: flex; flex-direction: column; align-items: center; gap: clamp(6px, 1.5vh, 12px);
 }
 .hero-logo-mark {
-  width: clamp(200px, 60vw, 780px);
+  max-width: clamp(200px, 60vw, 780px);
+  max-height: clamp(60px, 22vh, 300px);
+  width: auto;
   height: auto;
 }
 .hero-logo-text {
-  width: clamp(240px, 72vw, 760px);
+  max-width: clamp(240px, 72vw, 760px);
+  max-height: clamp(36px, 10vh, 140px);
+  width: auto;
   height: auto;
+}
+@media (min-width: 901px) {
+  .hero-cover-inner { max-width: 1100px; }
+  .hero-old-logo {
+    flex-direction: row; flex-wrap: wrap; justify-content: center;
+    gap: clamp(16px, 2.5vw, 32px);
+  }
+  .hero-logo-mark {
+    max-width: clamp(140px, 26vw, 320px);
+    max-height: clamp(90px, 30vh, 320px);
+  }
+  .hero-logo-text {
+    max-width: clamp(170px, 30vw, 380px);
+    max-height: clamp(56px, 20vh, 200px);
+  }
 }
 .hero-emblem-img {
   border-radius: 50%;
@@ -921,6 +941,26 @@ section { padding: 120px 0; }
   color: #4a4a52;
   display: flex; gap: 8px; align-items: center;
 }
+.sold-out-badge {
+  position: absolute; top: 16px; right: 16px;
+  z-index: 4;
+  background: var(--ink);
+  color: var(--cream);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+}
+.product-card.sold-out .product-photo,
+.jar-card.sold-out .jar-card-photo,
+.menu-item.sold-out .menu-item-photo {
+  opacity: 0.55;
+}
+.product-card.sold-out .shop-link,
+.menu-item.sold-out .menu-item-name {
+  color: var(--ink-2);
+}
 .product-name {
   font-family: "Cormorant Garamond", serif;
   font-size: 26px; font-weight: 500;
@@ -986,6 +1026,7 @@ section { padding: 120px 0; }
   display: flex; flex-direction: column;
   padding-top: 32px;
   border-top: 1px solid var(--hair-dark);
+  min-width: 0;
 }
 .recipe-num {
   font-family: "JetBrains Mono", monospace;
@@ -1638,6 +1679,16 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
   font-size: 15px; font-weight: 500; color: var(--ink);
 }
 .size-opt .price { font-size: 12px; color: var(--ink-2); }
+@media (min-width: 901px) {
+  .size-picker { flex-direction: row; flex-wrap: wrap; gap: 12px; }
+  .size-opt { flex: 1 1 140px; padding: 12px 16px; }
+}
+@media (min-width: 901px) and (max-height: 860px) {
+  .pdp { padding: 48px 0 80px; }
+  .pdp-crumb { margin-bottom: 20px; }
+  .pdp-tagline { margin-bottom: 24px; }
+  .pdp-meta { margin-bottom: 24px; }
+}
 .qty-and-add { display: flex; gap: 12px; margin-bottom: 40px; }
 .qty-stepper {
   display: flex; align-items: center;
