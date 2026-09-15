@@ -5,11 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" href="assets/brand.png" />
 <title>Mumu's Pikliz - Haitian condiments, jarred in Boston</title>
+<meta name="description" content="Fresh Haitian condiments made in Boston. Delivery covers the South Shore and Boston area; shipping reaches anywhere in the U.S." />
+<link rel="canonical" href="https://mumuspikliz.com/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Mumu's Pikliz" />
+<meta property="og:url" content="https://mumuspikliz.com/" />
+<meta property="og:title" content="Mumu's Pikliz - Haitian condiments, jarred in Boston" />
+<meta property="og:description" content="Fresh Haitian condiments made in Boston. Delivery covers the South Shore and Boston area; shipping reaches anywhere in the U.S." />
+<meta property="og:image" content="https://mumuspikliz.com/assets/newlogo.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Mumu's Pikliz - Haitian condiments, jarred in Boston" />
+<meta name="twitter:description" content="Fresh Haitian condiments made in Boston. Delivery covers the South Shore and Boston area; shipping reaches anywhere in the U.S." />
+<meta name="twitter:image" content="https://mumuspikliz.com/assets/newlogo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500;1,600&family=DM+Sans:wght@400;500;600;700&family=Italiana&family=Allura&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
 <script src="image-slot.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Mumu's Pikliz",
+  "url": "https://mumuspikliz.com/",
+  "logo": "https://mumuspikliz.com/assets/logo.png",
+  "image": "https://mumuspikliz.com/assets/newlogo.png",
+  "telephone": "+18573422433",
+  "email": "mumuspikliz@gmail.com",
+  "areaServed": ["South Shore, MA", "Boston, MA", "United States"],
+  "sameAs": ["https://www.instagram.com/mumus_pikliz"]
+}
+</script>
 </head>
 <body>
 <div id="nav-root"></div>
@@ -39,7 +65,9 @@
 
   bindCartUi();
   bindContactForm();
+  bindBrandIntroVideo();
   initHeroCarousel();
+  initRecipeEmbedFit();
   if (window.instgrm) window.instgrm.Embeds.process();
 </script>
 <script async src="https://www.instagram.com/embed.js"></script>

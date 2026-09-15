@@ -93,7 +93,7 @@ function menuOrderFormHtml() {
             </p>
             <ul class="contact-list">
               <li><span class="k">Phone</span><a href="tel:+18573422433">857-342-2433</a></li>
-              <li><span class="k">Email</span><a href="mailto:hello@mumuspikliz.com">hello@mumuspikliz.com</a></li>
+              <li><span class="k">Email</span><a href="mailto:mumuspikliz@gmail.com">mumuspikliz@gmail.com</a></li>
               <li><span class="k">Instagram</span><a href="https://www.instagram.com/mumus_pikliz" target="_blank" rel="noopener">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:5px"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@mumus_pikliz</a></li>
               <li><span class="k">Hours</span><span>Sat &amp; Sun, 10a — 4p ET</span></li>

@@ -17,7 +17,16 @@
      These stay readable regardless of the active palette. */
   --on-dark: #f7ecd1;
   --on-dark-2: rgba(247,236,209,0.75);
-  --nav-h: 88px;
+  /* Nav height is derived, not asserted: it's the actual sum of the logo
+     size and the nav's own vertical padding below, both fluid. Every
+     "fit this section in the viewport" calculation elsewhere (hero,
+     panels) subtracts --nav-h from 100vh/100svh before computing its own
+     fluid unit, so a big nav genuinely eats into their budget instead of
+     being an approximate fixed offset. On a very short viewport the nav
+     itself shrinks too, instead of eating a fixed 88px no matter what. */
+  --nav-logo-size: clamp(36px, 5.6vh, 48px);
+  --nav-pad-v: clamp(10px, 2.2vh, 20px);
+  --nav-h: calc(var(--nav-logo-size) + var(--nav-pad-v) * 2);
 }
 
 * { box-sizing: border-box; }
@@ -64,7 +73,7 @@ h1 { font-weight: 400; }
 
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: 0; background: none; }
-img { max-width: 100%; display: block; }
+img, video { max-width: 100%; display: block; }
 
 /* nav */
 .nav {
@@ -83,15 +92,15 @@ img { max-width: 100%; display: block; }
 .nav.on-dark .nav-logo-text .nl-1 { color: #f7ecd1; }
 
 .nav-inner {
-  max-width: 1320px; margin: 0 auto;
+  max-width: 1240px; margin: 0 auto;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 40px; gap: 32px;
+  padding: var(--nav-pad-v) 40px; gap: 32px;
 }
 .nav-logo-wrap {
   display: flex; align-items: center; gap: 12px;
 }
 .nav-logo-mark {
-  width: 48px; height: 48px;
+  width: var(--nav-logo-size); height: var(--nav-logo-size);
   border-radius: 50%;
   display: block;
   flex-shrink: 0;
@@ -182,6 +191,7 @@ body.has-cart-items .nav-cart-badge { opacity: 1; }
   position: fixed;
   top: var(--nav-h); left: 0;
   width: 100%; height: calc(100vh - var(--nav-h));
+  height: calc(100dvh - var(--nav-h));
   background: #0a2a6c;
   border: 1.5px solid #1a4a9c;
   border-top: none;
@@ -217,8 +227,44 @@ body.nav-menu-open { overflow: hidden; }
 }
 
 /* container */
-.container { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
+.container { max-width: 1240px; margin: 0 auto; padding: 0 64px; }
 section { padding: 120px 0; }
+
+/* Homepage sections: one screen per section on desktop, so the page reads
+   as a sequence of full-height panels instead of a long scroll of
+   oversized padding. Mobile keeps natural content height (see ≤900 block).
+   Unlike the hero, these panels are min-height (not a hard cap), so if a
+   section's content ever needs more room than the panel offers, it simply
+   grows — it never clips. They target 98svh rather than the hero's 100svh
+   so each panel visibly starts to hand off to the next as you approach the
+   bottom of the viewport, instead of a hard full-screen cut.
+   --panel-unit mirrors --hero-unit's approach on .hero-cover: one fluid,
+   viewport-width-AND-height-aware value driving the panel's own padding,
+   so "how much breathing room a panel gets" scales as one dynamic knob
+   instead of a hardcoded 80px that stayed constant regardless of screen
+   size. Like --hero-unit, its height term is a fraction of the panel's
+   real available height (100vh - nav-h), not raw vh, so a bigger or
+   smaller nav shifts the budget instead of being ignored. */
+@media (min-width: 901px) {
+  .brand-intro,
+  .menu-section,
+  .recipes,
+  .press,
+  .locations {
+    --panel-unit: clamp(14px, min(2vw, calc((100vh - var(--nav-h)) * 0.033)), 28px);
+    min-height: calc(98svh - var(--nav-h));
+    display: flex;
+    align-items: center;
+    padding: calc(var(--panel-unit) * 1.6) 0;
+  }
+  .brand-intro > .container,
+  .menu-section > .container,
+  .recipes > .container,
+  .press > .container,
+  .locations > .container {
+    width: 100%;
+  }
+}
 
 /* Haitian flag section variants — alternating blue & red sections */
 .section-flag-blue {
@@ -580,16 +626,31 @@ section { padding: 120px 0; }
   background: #0a2a6c;
 }
 .hero-cover {
+  /* Single source of truth for hero scale: grows fluidly with both the
+     width AND height of the viewport, so every element below that
+     references it resizes together automatically — no per-element
+     breakpoints to hand-tune as screens get bigger.
+     The height term is a fraction of (100vh - nav-h) — the hero's actual
+     available height, nav included — not raw vh: it's sized so the logo
+     + text + buttons + scroll-hint stack (~31 hero-units of fluid height
+     plus ~104px of fixed-size chrome) always fits inside that real
+     budget, on short/wide viewports (laptops, landscape tablets) as well
+     as tall ones, so the content never grows past the section and pushes
+     the buttons/scroll-hint off screen — and if the nav itself gets
+     bigger or smaller, this adjusts with it instead of drifting out of
+     sync. */
+  --hero-unit: clamp(10px, min(2.4vw, calc((100vh - var(--nav-h)) * 0.031 - 4px)), 30px);
   position: relative;
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  min-height: calc(min(880px, 100svh) - var(--nav-h));
+  min-height: calc(100svh - var(--nav-h) + 2px);
   background: #0a0605;
   overflow: hidden;
   isolation: isolate;
   display: grid;
-  place-items: center;
+  align-items: start;
+  justify-items: center;
   color: var(--on-dark);
 }
 .hero-carousel {
@@ -622,20 +683,20 @@ section { padding: 120px 0; }
 .hero-cover-inner {
   position: relative; z-index: 3;
   text-align: center;
-  padding: clamp(32px, 8vw, 80px) clamp(16px, 5vw, 40px);
-  max-width: 880px;
+  padding: calc(var(--hero-unit) * 3) calc(var(--hero-unit) * 1.2) calc(var(--hero-unit) * 2.4);
+  max-width: calc(var(--hero-unit) * 40);
   width: 100%;
-  display: flex; flex-direction: column; align-items: center; gap: 36px;
+  display: flex; flex-direction: column; align-items: center; gap: calc(var(--hero-unit) * 1.2);
 }
 .hero-old-logo {
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  display: flex; flex-direction: column; align-items: center; gap: calc(var(--hero-unit) * 0.4);
 }
 .hero-logo-mark {
-  width: clamp(200px, 60vw, 780px);
+  width: calc(var(--hero-unit) * 24);
   height: auto;
 }
 .hero-logo-text {
-  width: clamp(240px, 72vw, 760px);
+  width: calc(var(--hero-unit) * 27);
   height: auto;
 }
 .hero-emblem-img {
@@ -673,7 +734,7 @@ section { padding: 120px 0; }
 .hero-tag::before { left: -8px; }
 .hero-tag::after { right: -8px; }
 .hero-cover-buttons {
-  display: flex; gap: 12px; margin-top: 4px;
+  display: flex; gap: 12px; margin-top: calc(var(--hero-unit) * 0.13);
 }
 .btn-cover {
   display: inline-flex; align-items: center; justify-content: center;
@@ -696,9 +757,7 @@ section { padding: 120px 0; }
 
 /* Scrolling hint */
 .scroll-hint {
-  position: absolute; bottom: 32px; left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
+  margin-top: calc(var(--hero-unit) * -0.55);
   font-family: "DM Sans", sans-serif;
   font-size: 10px; font-weight: 400;
   letter-spacing: 0.4em; text-transform: uppercase;
@@ -745,18 +804,88 @@ section { padding: 120px 0; }
 .brand-intro-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
+  gap: calc(var(--panel-unit, 28px) * 2.8);
   align-items: center;
-  padding: 120px 0;
+  padding: calc(var(--panel-unit, 28px) * 4) 0;
 }
 .brand-intro-photo {
-  aspect-ratio: 4/3;
   overflow: hidden;
   border-radius: 4px;
+  /* Centers the (shrink-wrapped) .video-frame without touching how the
+     video itself is sized. */
+  text-align: center;
 }
 .brand-intro-photo img {
   width: 100%; height: 100%;
   object-fit: cover; display: block;
+}
+.video-frame {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+.brand-intro-photo video {
+  /* Height is the driver, set from the real viewport budget (same one the
+     panel itself uses: 98svh minus nav height minus the panel's own
+     vertical padding, --panel-unit * 1.6 top and bottom) — never a fixed
+     px value, so it shrinks/grows with the screen. Width stays auto and
+     is derived purely from aspect-ratio, so the shape never changes. */
+  display: block;
+  height: calc(98svh - var(--nav-h) - var(--panel-unit, 28px) * 3.2);
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 9/16;
+  cursor: pointer;
+}
+.video-play-btn {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 68px; height: 68px;
+  display: flex; align-items: center; justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(10, 42, 108, 0.45);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+.video-play-btn svg { margin-left: 5px; }
+.video-play-btn:hover {
+  background: rgba(10, 42, 108, 0.65);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+.brand-intro-photo.is-playing .video-play-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+.video-mute-btn {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(10, 42, 108, 0.45);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+.video-mute-btn::after {
+  content: "";
+  position: absolute;
+  width: 26px; height: 1.5px;
+  background: currentColor;
+  transform: rotate(-45deg) scaleX(0);
+  transition: transform 0.15s ease;
+}
+.video-mute-btn.is-muted::after { transform: rotate(-45deg) scaleX(1); }
+.video-mute-btn:hover { background: rgba(10, 42, 108, 0.65); }
+.brand-intro-photo.is-playing .video-mute-btn {
+  opacity: 1;
+  pointer-events: auto;
 }
 .brand-intro-text .section-eyebrow { color: rgba(247,236,209,0.6); }
 .brand-intro-text .btn-primary { background: #f7ecd1; color: #0a2a6c; border-color: #f7ecd1; }
@@ -803,6 +932,7 @@ section { padding: 120px 0; }
   overflow: hidden;
   position: relative;
 }
+.story-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .story-photo image-slot { width: 100%; height: 100%; display: block; }
 .story-photo .placeholder {
   position: absolute; inset: 0;
@@ -850,15 +980,17 @@ section { padding: 120px 0; }
 /* Section heads — restrained */
 .section-head {
   display: grid; grid-template-columns: 1fr 1fr;
-  margin-bottom: 80px; gap: 80px; align-items: end;
+  margin-bottom: calc(var(--panel-unit, 28px) * 1.2);
+  gap: calc(var(--panel-unit, 28px) * 1.2);
+  align-items: end;
 }
 .section-head h2 {
-  font-size: clamp(40px, 5vw, 72px);
+  font-size: clamp(28px, 3vw, 46px);
   font-style: italic;
   font-weight: 400;
 }
 .section-head .lede {
-  max-width: 420px; font-size: 16px; color: var(--ink-2);
+  max-width: 420px; font-size: 15px; color: var(--ink-2);
   line-height: 1.6;
   justify-self: end;
 }
@@ -867,7 +999,7 @@ section { padding: 120px 0; }
   font-family: "DM Sans", sans-serif;
   font-size: 11px; font-weight: 500;
   text-transform: uppercase; letter-spacing: 0.32em;
-  color: var(--tomato); margin-bottom: 24px;
+  color: var(--tomato); margin-bottom: 16px;
 }
 
 /* PRODUCTS — editorial list */
@@ -875,6 +1007,9 @@ section { padding: 120px 0; }
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 32px;
+}
+@media (max-width: 1100px) {
+  .products { grid-template-columns: repeat(3, 1fr); gap: 28px; }
 }
 .product-card {
   background: transparent;
@@ -999,55 +1134,90 @@ section { padding: 120px 0; }
 .recipes .section-eyebrow { color: var(--tomato); }
 .recipe-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 64px;
+  /* Always 3 across, at every width. minmax(0, 1fr) (not a bare 1fr) so
+     a track can shrink below its content's min-content width — the
+     Instagram iframe inside has a fixed pixel width of its own and would
+     otherwise drag its column wider than the row. The columns are capped
+     at ~260px each via max-width on the grid (not min(260px, 1fr) — fr
+     isn't a length, so that's invalid and the browser discards the whole
+     declaration, which is exactly what stacked these into one column).
+     Narrower columns also keep the embed in its compact layout. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: calc(260px * 3 + 20px * 2);
+  margin: 0 auto;
+  gap: 20px;
 }
 .recipe-card {
   display: flex; flex-direction: column;
-  padding-top: 32px;
+  padding-top: 14px;
   border-top: 1px solid var(--hair-dark);
 }
 .recipe-num {
   font-family: "JetBrains Mono", monospace;
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.1em;
   color: var(--ink-2);
-  margin-bottom: 48px;
+  margin-bottom: 12px;
 }
 .recipe-card h3 {
-  font-size: 30px; margin-bottom: 16px;
+  font-size: 19px; margin-bottom: 6px;
   font-style: italic;
   font-weight: 400;
 }
 .recipe-card p {
-  font-size: 15px;
+  font-size: 12px;
   color: var(--ink-2);
   margin: 0;
-  line-height: 1.65;
+  line-height: 1.55;
 }
 .recipe-tag {
   display: inline-block;
-  margin-top: 24px;
+  margin-top: 10px;
   font-family: "DM Sans", sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--tomato);
 }
+.recipe-link {
+  display: inline-block;
+  margin-top: auto;
+  padding-top: 12px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  align-self: flex-start;
+}
+.recipe-link:hover { color: var(--tomato); }
 .recipe-photo {
-  aspect-ratio: 4/3;
+  /* Same taller-than-wide, nav-h-aware treatment as .jar-card-photo — the
+     text below (.recipe-card h3/p, .recipe-num) is trimmed down to match.
+     Smaller fraction/caps than .jar-card-photo: this card carries more
+     chrome around the photo (a number label, a 3-line description) than
+     the product card does, so the photo needs to give up more of the
+     panel's budget for everything to still fit in view together. */
+  height: clamp(180px, calc((100vh - var(--nav-h)) * 0.34), 340px);
   background: var(--cream);
   border: 1px solid var(--hair);
-  margin-bottom: 32px;
+  margin-bottom: 14px;
   position: relative;
   overflow: hidden;
 }
 .recipe-photo.has-embed {
-  aspect-ratio: unset;
-  min-height: 560px;
+  /* Instagram/TikTok reels are portrait video and Instagram's own embed.js
+     sets the iframe's height once it loads — we can't make that height
+     fluid. Instead we cap how tall the card is allowed to be and let it
+     crop, so a 9:16 reel can't single-handedly blow the panel past its
+     budget the way the old fixed 560px min-height did on short screens. */
+  /* A ceiling only, no floor: the JS fit sets the real height from the
+     post itself (header + photo, footer cropped) and this is just the
+     most the panel's budget will let it take. */
+  height: min(calc((100vh - var(--nav-h)) * 0.4), 420px);
   background: transparent;
   border: 0;
-  overflow: visible;
+  overflow: hidden;
   position: relative;
 }
 .recipe-photo.has-embed::before {
@@ -1062,7 +1232,16 @@ section { padding: 120px 0; }
 }
 .recipe-photo.has-embed blockquote,
 .recipe-photo.has-embed iframe {
-  position: relative;
+  /* Forcing this down to width:100% of a narrow card broke Instagram's
+     own embed layout (it isn't truly responsive below its own design
+     width — the "View profile" button and photo just got clipped rather
+     than reflowing). So instead we let it render at its natural size and
+     scale the whole thing down uniformly (see initRecipeEmbedFit in
+     landing.js) — everything stays legible and in proportion, just
+     smaller, instead of being cropped. */
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: top left;
   z-index: 1;
 }
 @keyframes skeleton-shimmer {
@@ -1124,19 +1303,23 @@ section { padding: 120px 0; }
 
 /* Contact block (inline within Locations) */
 .contact-block {
-  margin-top: 120px;
-  padding-top: 80px;
+  /* Same panel-unit basis as the rest of the homepage panels, instead of
+     its own separate hardcoded 120px/80px — this block sits inside
+     .locations underneath that section's own heading, so keeping it lean
+     matters even more here than elsewhere. */
+  margin-top: calc(var(--panel-unit, 28px) * 1.6);
+  padding-top: calc(var(--panel-unit, 28px) * 1.4);
   border-top: 1px solid var(--hair);
 }
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 96px;
+  gap: calc(var(--panel-unit, 28px) * 1.6);
   align-items: start;
 }
 .contact-list {
   list-style: none;
-  margin: 32px 0 0;
+  margin: 14px 0 0;
   padding: 0;
   display: flex; flex-direction: column;
 }
@@ -1144,9 +1327,9 @@ section { padding: 120px 0; }
   display: grid;
   grid-template-columns: 100px 1fr;
   gap: 16px;
-  padding: 14px 0;
+  padding: 8px 0;
   border-top: 1px solid var(--hair);
-  font-size: 15px;
+  font-size: 14px;
 }
 .contact-list li:last-child { border-bottom: 1px solid var(--hair); }
 .contact-list .k {
@@ -1161,24 +1344,24 @@ section { padding: 120px 0; }
 
 .contact-form {
   display: flex; flex-direction: column;
-  gap: 24px;
+  gap: 14px;
 }
-.cf-row { display: flex; flex-direction: column; gap: 8px; }
+.cf-row { display: flex; flex-direction: column; gap: 5px; }
 .cf-label {
   font-family: "DM Sans", sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: var(--ink-2);
 }
 .cf-input {
   font-family: "Cormorant Garamond", serif;
-  font-size: 18px;
+  font-size: 15px;
   background: transparent;
   color: var(--ink);
   border: 0;
   border-bottom: 1px solid var(--hair-dark);
-  padding: 8px 0;
+  padding: 6px 0;
   outline: none;
   resize: none;
   transition: border-color .15s;
@@ -1190,11 +1373,11 @@ section { padding: 120px 0; }
 .cf-input:focus { border-bottom-color: var(--tomato); }
 .cf-textarea {
   font-family: "DM Sans", sans-serif;
-  font-size: 15px;
-  line-height: 1.55;
-  padding-top: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  padding-top: 8px;
 }
-.contact-form .btn { align-self: flex-start; margin-top: 8px; }
+.contact-form .btn { align-self: flex-start; margin-top: 4px; }
 .loc-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px;
 }
@@ -1315,6 +1498,7 @@ section { padding: 120px 0; }
   display: none;
   position: fixed;
   left: 16px; right: 16px; bottom: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
   animation: cart-bubble-in .4s cubic-bezier(.34,1.56,.64,1) both;
   z-index: 80;
   padding: 16px 22px;
@@ -1361,7 +1545,7 @@ section { padding: 120px 0; }
   /* Reserve a sliver at the bottom of body so footer/last section content
      isn't covered by the bar. Only when cart has items — controlled via a
      class on body that we can toggle from JS when items exist. */
-  body.has-cart-items { padding-bottom: 88px; }
+  body.has-cart-items { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
 }
 :root { --cart-width: 420px; }
 
@@ -1525,7 +1709,18 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
 }
 .jar-card-photo {
   position: relative;
-  aspect-ratio: 3/4;
+  /* Height is bound to the viewport's available space, not the grid
+     column's width — a flat aspect-ratio here made the card's proportions
+     follow the grid column's width, with no regard for how much vertical
+     room the panel actually had (the same class of bug the hero logo
+     had). Sized off (100vh - nav-h) instead, so the nav's real height is
+     accounted for too, not just an approximation. The card is meant to
+     read taller than it is wide (portrait, like the product jars
+     themselves) — .jar-card-body below is trimmed down in text size and
+     padding specifically to leave room for that taller photo within the
+     same panel budget. This pair (taller media + leaner caption) is the
+     pattern other card grids (.recipe-card, .press-card, …) should reuse. */
+  height: clamp(240px, calc((100vh - var(--nav-h)) * 0.5), 480px);
   overflow: hidden;
   background: rgba(254,243,214,0.04);
 }
@@ -1541,20 +1736,28 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
   position: absolute; top: 14px; left: 14px; z-index: 3;
 }
 .jar-card-body {
-  padding: 20px 22px 24px;
+  padding: 14px 16px 16px;
   border-top: 1px solid rgba(254,243,214,0.14);
 }
 .jar-card-name {
   font-family: "Cormorant Garamond", serif;
-  font-size: 22px; font-weight: 500; font-style: italic;
+  font-size: 17px; font-weight: 500; font-style: italic;
   color: #fef3d6;
 }
 .jar-card-tag {
-  font-size: 13px; color: #f5cf58;
-  margin-top: 4px;
+  font-size: 11px; color: #f5cf58;
+  margin-top: 3px;
 }
 
-@media (max-width: 700px) {
+.section-cta {
+  text-align: center;
+  margin-top: calc(var(--panel-unit, 28px) * 1.3);
+}
+
+@media (max-width: 900px) {
+  .jar-cards { grid-template-columns: 1fr 1fr; gap: 16px; }
+}
+@media (max-width: 600px) {
   .jar-cards { grid-template-columns: 1fr; gap: 16px; }
 }
 
@@ -1706,6 +1909,9 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
   align-items: start;
   padding-top: 64px;
 }
+@media (max-width: 1100px) {
+  .checkout-grid { grid-template-columns: 1fr 340px; gap: 40px; }
+}
 
 .checkout-head {
   padding: 64px 0 52px;
@@ -1828,7 +2034,7 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
   border-bottom: 1px solid var(--hair);
 }
 .co-summary-row:last-of-type { border-bottom: none; }
-.co-summary-name { color: var(--ink); }
+.co-summary-name { color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
 .co-summary-size { color: var(--ink-2); font-style: italic; }
 .co-summary-qty { color: var(--ink-2); }
 .co-summary-price { font-weight: 500; text-align: right; }
@@ -1886,7 +2092,7 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
     border-top: none;
   }
   .co-summary-card.open {
-    max-height: 1200px;
+    max-height: 2500px;
     padding: 28px;
     border-bottom: 1px solid var(--hair);
   }
@@ -1985,7 +2191,7 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
 }
 .success-meta-row {
   display: grid;
-  grid-template-columns: 140px 1fr;
+  grid-template-columns: minmax(90px, 140px) 1fr;
   gap: 16px;
   padding: 12px 0;
   border-bottom: 1px solid var(--hair);
@@ -2023,6 +2229,7 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
   font-family: "Cormorant Garamond", serif;
   font-size: 17px;
 }
+.success-line > :first-child { min-width: 0; overflow-wrap: anywhere; }
 .success-total {
   font-weight: 500;
   font-size: 20px;
@@ -2233,11 +2440,12 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
 }
 
 @media (max-width: 900px) {
-  .menu-item, .menu-item.flipped {
+  .menu-item, .menu-item.flipped, .menu-item:nth-child(even) {
     grid-template-columns: 1fr;
     gap: 32px;
   }
-  .menu-item.flipped .menu-item-photo { order: 0; }
+  .menu-item.flipped .menu-item-photo,
+  .menu-item:nth-child(even) .menu-item-photo { order: 0; }
 }
 
 .menu-item-head {
@@ -2305,13 +2513,6 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
   padding: 140px 0;
 }
 
-@media (max-width: 900px) {
-  .menu-item, .menu-item:nth-child(even) {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-  .menu-item:nth-child(even) .menu-item-photo { order: 0; }
-}
 /* RECIPES BLOG */
 
 .recipes-hero {
@@ -2564,10 +2765,16 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
 @media (max-width: 600px) {
   .post-grid { grid-template-columns: 1fr; }
 }
+.hand {
   font-family: "Cormorant Garamond", serif;
   font-style: italic; font-weight: 400;
-  font-size: 40px;
-  margin-bottom: 56px;
+  font-size: clamp(32px, 5vw, 48px);
+  color: var(--tomato);
+  margin-bottom: 24px;
+}
+.related {
+  background: var(--cream-2);
+  border-top: 1.5px solid var(--ink);
 }
 
 /* utility */
@@ -2578,25 +2785,39 @@ body.cart-open .nav-cart-btn { opacity: 0; pointer-events: none; }
 /* responsive */
 @media (max-width: 900px) {
   section { padding: 80px 0; }
+  .container { padding: 0 40px; }
   .story-grid, .pdp-grid { grid-template-columns: 1fr; gap: 64px; }
   .section-head { grid-template-columns: 1fr; gap: 32px; margin-bottom: 56px; }
   .section-head .lede { justify-self: start; }
   .products { grid-template-columns: 1fr 1fr; gap: 32px; }
-  .recipe-grid, .press-grid, .loc-grid { grid-template-columns: 1fr; gap: 48px; }
+  .press-grid, .loc-grid { grid-template-columns: 1fr; gap: 48px; }
+  /* Recipes stay 3 across on tablets — the cards just get narrower (and
+     the embed scales with them). They stack on phones (see ≤600 block). */
+  .recipe-grid { gap: 12px; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
   .contact-grid { grid-template-columns: 1fr; gap: 56px; }
   .section-flag-blue .contact-block,
   .section-flag-red .contact-block { padding: 40px; }
   .nav-links { display: none; }
   .nav-cart-btn { margin-left: auto; }
+  .menu-item-section { padding: 72px 0; }
+  .cta-strip { padding: 96px 40px; }
 }
 @media (max-width: 600px) {
-  :root { --nav-h: 80px; }
   .container { padding: 0 24px; }
-  .nav-inner { padding: 16px 24px; }
+  .nav-inner { padding: var(--nav-pad-v) 24px; }
   .products { grid-template-columns: 1fr; }
+  .recipe-grid { grid-template-columns: 1fr; gap: 40px; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-logo img { width: clamp(160px, 60%, 260px); }
   .section-flag-blue .contact-block,
   .section-flag-red .contact-block { padding: 24px; }
+  section { padding: 56px 0; }
+  .menu-item-section { padding: 56px 0; }
+  .menu-order { padding: 72px 0; }
+  .cta-strip { padding: 72px 24px; }
+  .contact-block { margin-top: 64px; padding-top: 48px; }
+  .menu-item-head { grid-template-columns: 1fr; gap: 6px; }
+  .menu-item-heat { padding-top: 0; }
+  .pdp-thumbs { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 }

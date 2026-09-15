@@ -82,9 +82,9 @@ function pdpHtml(product) {
 function relatedHtml(currentId) {
   const others = PRODUCTS.filter(p => p.id !== currentId);
   return `
-    <section class="related" style="background:var(--cream-2);border-top:1.5px solid var(--ink)">
+    <section class="related">
       <div class="container">
-        <h3 class="hand" style="font-size:48px;color:var(--tomato);margin-bottom:24px">
+        <h3 class="hand">
           You might also like —
         </h3>
         <div class="products">

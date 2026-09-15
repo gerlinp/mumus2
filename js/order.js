@@ -196,7 +196,7 @@ function bindOrder() {
       window.location.href = "order-success.html";
     } catch {
       submitBtn.disabled = false;
-      alert("Something went wrong. Please reach us at hello@mumuspikliz.com or call 857-342-2433.");
+      alert("Something went wrong. Please reach us at mumuspikliz@gmail.com or call 857-342-2433.");
     }
   });
 }

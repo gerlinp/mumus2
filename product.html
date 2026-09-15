@@ -28,7 +28,71 @@
 
   const productId = new URLSearchParams(location.search).get("id") || "pikliz";
   const product = PRODUCTS.find(p => p.id === productId) || PRODUCTS[0];
-  document.title = `${product.name} â€” Mumu's Pikliz`;
+  document.title = `${product.name} — Mumu's Pikliz`;
+
+  const canonicalUrl = `https://mumuspikliz.com/product.html?id=${product.id}`;
+  const absImage = `https://mumuspikliz.com/${product.image || "assets/newlogo.png"}`;
+
+  const canonicalLink = document.createElement("link");
+  canonicalLink.rel = "canonical";
+  canonicalLink.href = canonicalUrl;
+  document.head.appendChild(canonicalLink);
+
+  const metaTags = [
+    ["name", "description", product.desc],
+    ["property", "og:type", "product"],
+    ["property", "og:site_name", "Mumu's Pikliz"],
+    ["property", "og:url", canonicalUrl],
+    ["property", "og:title", document.title],
+    ["property", "og:description", product.desc],
+    ["property", "og:image", absImage],
+    ["name", "twitter:card", "summary_large_image"],
+    ["name", "twitter:title", document.title],
+    ["name", "twitter:description", product.desc],
+    ["name", "twitter:image", absImage],
+  ];
+  metaTags.forEach(([attr, key, content]) => {
+    const tag = document.createElement("meta");
+    tag.setAttribute(attr, key);
+    tag.setAttribute("content", content);
+    document.head.appendChild(tag);
+  });
+
+  const startPrice = Math.min(...product.sizes.map(s => s.price));
+  const ldJson = document.createElement("script");
+  ldJson.type = "application/ld+json";
+  ldJson.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "description": product.desc,
+    "image": absImage,
+    "sku": product.id,
+    "brand": { "@type": "Brand", "name": "Mumu's Pikliz" },
+    "offers": {
+      "@type": "Offer",
+      "url": canonicalUrl,
+      "priceCurrency": "USD",
+      "price": startPrice,
+      "availability": product.inStock === false
+        ? "https://schema.org/OutOfStock"
+        : "https://schema.org/InStock",
+    },
+  });
+  document.head.appendChild(ldJson);
+
+  const breadcrumbJson = document.createElement("script");
+  breadcrumbJson.type = "application/ld+json";
+  breadcrumbJson.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Mumu's", "item": "https://mumuspikliz.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Menu", "item": "https://mumuspikliz.com/menu.html" },
+      { "@type": "ListItem", "position": 3, "name": product.name, "item": canonicalUrl },
+    ],
+  });
+  document.head.appendChild(breadcrumbJson);
 
   document.getElementById("nav-root").innerHTML = navHtml();
 

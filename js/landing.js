@@ -31,8 +31,8 @@ function heroCoverHtml() {
           <a href="menu.html" class="btn-cover btn-red">Menu</a>
           <a href="about.html" class="btn-cover btn-blue">About</a>
         </div>
+        <div class="scroll-hint">Scroll</div>
       </div>
-      <div class="scroll-hint">Scroll</div>
     </section>
     </div>`;
 }
@@ -50,13 +50,86 @@ function initHeroCarousel() {
   }, 5000);
 }
 
+// Instagram's embed.js renders each blockquote as an iframe at a fixed
+// pixel size of its own choosing — it isn't responsive below its own
+// design width, so squeezing it to the card's width (as CSS width:100%
+// tried to) just clips content instead of reflowing it. Instead we let
+// each embed render at its natural size, scale the whole iframe down to
+// match the card's width exactly (so the photo fills the card edge to
+// edge, same as .jar-card-photo/.recipe-photo), and crop off Instagram's
+// own footer chrome (like icons, "Add a comment…") — our own recipe
+// title/body/tag underneath already serves as the caption, so that
+// footer is pure redundant chrome. We can't measure it directly (the
+// iframe is cross-origin, its DOM is opaque to us), so IG_FOOTER_PX is a
+// measured-by-eye estimate of that footer's height at the embed's natural
+// render width; it trims consistently across posts because Instagram's
+// embed footer is a fixed set of rows (icons, likes count, comment
+// field) that doesn't grow with the photo.
+const IG_FOOTER_PX = 118;
+
+// Instagram first inserts a short placeholder iframe and only grows it to
+// the real post height once the content inside has loaded. Anything
+// shorter than this is that placeholder, not a post — cropping a footer
+// off it would leave a sliver, so we wait for the real size instead.
+const IG_PLACEHOLDER_MAX_PX = 250;
+
+function initRecipeEmbedFit() {
+  document.querySelectorAll(".recipe-photo.has-embed").forEach((container) => {
+    if (container.dataset.igFitBound) return;
+    container.dataset.igFitBound = "1";
+
+    const fit = (iframe) => {
+      // The CSS height on this element is the panel's nav-h/viewport-aware
+      // budget — a ceiling only, never a floor. Clear our own override
+      // first so we read the CSS value, not what we set last time.
+      container.style.height = "";
+      const maxH = container.getBoundingClientRect().height;
+
+      iframe.style.transform = "none";
+      const natW = iframe.offsetWidth;
+      const natH = iframe.offsetHeight;
+      const cw = container.clientWidth;
+      if (!natW || !cw) return;
+      const scale = cw / natW;
+      iframe.style.transform = `scale(${scale})`;
+      iframe.style.left = "0";
+      iframe.style.top = "0";
+
+      // Still the placeholder: show the full budget and try again later.
+      if (natH < IG_PLACEHOLDER_MAX_PX) return;
+
+      // Header + photo, with Instagram's footer cropped off; capped at the
+      // budget but otherwise as tall as the post naturally is.
+      const visibleNatH = natH - IG_FOOTER_PX;
+      container.style.height = `${Math.round(Math.min(visibleNatH * scale, maxH))}px`;
+    };
+
+    const watchIframe = (iframe) => {
+      fit(iframe);
+      new ResizeObserver(() => fit(iframe)).observe(iframe);
+      window.addEventListener("resize", () => fit(iframe));
+      // Belt and braces for the placeholder → real-size transition, in
+      // case it lands in a way ResizeObserver doesn't see.
+      [400, 1200, 3000].forEach((ms) => setTimeout(() => fit(iframe), ms));
+    };
+
+    const existing = container.querySelector("iframe");
+    if (existing) { watchIframe(existing); return; }
+
+    new MutationObserver((_muts, obs) => {
+      const iframe = container.querySelector("iframe");
+      if (iframe) { obs.disconnect(); watchIframe(iframe); }
+    }).observe(container, { childList: true });
+  });
+}
+
 function storyHtml() {
   return `
     <section class="story section-flag-blue" id="story">
       <div class="container">
         <div class="story-grid">
           <div class="story-photo">
-            <img src="assets/profile.jpg" alt="Samantha Benoit, founder" style="width:100%;height:100%;object-fit:cover;display:block" />
+            <img src="assets/profile.jpg" alt="Samantha Benoit, founder" />
           </div>
           <div>
             <div class="story-eyebrow">— Our Story</div>
@@ -87,8 +160,16 @@ function brandIntroHtml() {
     <section class="brand-intro">
       <div class="container">
         <div class="brand-intro-grid">
-          <div class="brand-intro-photo">
-            <img src="assets/about-01.jpg" alt="Dish garnished with Mumu's Pikliz" />
+          <div class="brand-intro-photo" data-video-wrap>
+            <div class="video-frame">
+              <video src="assets/what-we-are.mp4" loop playsinline preload="metadata"></video>
+              <button type="button" class="video-play-btn" data-video-play aria-label="Play video with sound">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              </button>
+              <button type="button" class="video-mute-btn" data-video-mute aria-label="Mute">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 9 3 15 8 15 13 20 13 4 8 9 3 9" fill="currentColor" stroke="none"/><path d="M16 8a5 5 0 0 1 0 8"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+              </button>
+            </div>
           </div>
           <div class="brand-intro-text">
             <span class="section-eyebrow">— What we are</span>
@@ -157,7 +238,7 @@ function productsSectionHtml() {
           </p>
         </div>
         <div class="jar-cards">${cards}</div>
-        <div style="text-align:center;margin-top:64px">
+        <div class="section-cta">
           <a href="menu.html" class="btn btn-primary">See the full menu →</a>
         </div>
       </div>
@@ -170,12 +251,13 @@ function recipesSectionHtml() {
       <div class="recipe-num">${r.n} / 03</div>
       <div class="recipe-photo${r.reelUrl ? " has-embed" : ""}">
         ${r.reelUrl
-          ? `<blockquote class="instagram-media" data-instgrm-permalink="${r.reelUrl}" data-instgrm-version="14" style="margin:0;max-width:100%;min-width:0;width:100%;border:0"></blockquote>`
+          ? `<blockquote class="instagram-media" data-instgrm-permalink="${r.reelUrl}" data-instgrm-version="14" style="margin:0;width:400px;border:0"></blockquote>`
           : `<image-slot id="recipe-${i}" shape="rect" placeholder="Drop ${r.title} photo" style="width:100%;height:100%;display:block"></image-slot>`}
       </div>
       <h3>${r.title}</h3>
       <p>${r.body}</p>
       <span class="recipe-tag">${r.tag}</span>
+      ${r.reelUrl ? `<a class="recipe-link" href="${r.reelUrl}" target="_blank" rel="noopener">View the post →</a>` : ""}
     </div>`).join("");
 
   return `
@@ -246,16 +328,16 @@ function locationsSectionHtml() {
           <div class="contact-grid">
             <div>
               <span class="section-eyebrow">— Get in touch</span>
-              <h2 style="font-size:clamp(34px,4vw,56px);margin:20px 0 16px">
+              <h2 style="font-size:clamp(24px,2.6vw,38px);margin:10px 0 10px">
                 Order or <span class="gold-script">say hello.</span>
               </h2>
-              <p class="lede" style="justify-self:start;margin-bottom:32px">
+              <p class="lede" style="justify-self:start;margin-bottom:14px;font-size:14px">
                 Phone calls. Emails. <i>DMs that start with "how do I get a jar."</i>
                 Tell us what you need and we'll sort delivery, shipping, or pickup.
               </p>
               <ul class="contact-list">
                 <li><span class="k">Phone</span><a href="tel:+18573422433">857-342-2433</a></li>
-                <li><span class="k">Email</span><a href="mailto:hello@mumuspikliz.com">hello@mumuspikliz.com</a></li>
+                <li><span class="k">Email</span><a href="mailto:mumuspikliz@gmail.com">mumuspikliz@gmail.com</a></li>
                 <li><span class="k">Instagram</span><a href="https://www.instagram.com/mumus_pikliz" target="_blank" rel="noopener">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:5px"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@mumus_pikliz</a></li>
                 <li><span class="k">Hours</span><span>Sat &amp; Sun, 10a — 4p ET</span></li>
@@ -320,7 +402,7 @@ function footerHtml() {
             <h4>Contact</h4>
             <div class="footer-links">
               <a href="tel:+18573422433">857-342-2433</a>
-              <a href="mailto:hello@mumuspikliz.com">hello@mumuspikliz.com</a>
+              <a href="mailto:mumuspikliz@gmail.com">mumuspikliz@gmail.com</a>
               <a href="https://www.instagram.com/mumus_pikliz" target="_blank" rel="noopener">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:5px"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@mumus_pikliz</a>
             </div>
@@ -333,6 +415,45 @@ function footerHtml() {
         </div>
       </div>
     </footer>`;
+}
+
+function bindBrandIntroVideo() {
+  const wrap = document.querySelector("[data-video-wrap]");
+  if (!wrap) return;
+  const video = wrap.querySelector("video");
+  const playBtn = wrap.querySelector("[data-video-play]");
+  const muteBtn = wrap.querySelector("[data-video-mute]");
+  if (!video || !playBtn) return;
+
+  function syncMuteBtn() {
+    if (!muteBtn) return;
+    muteBtn.classList.toggle("is-muted", video.muted);
+    muteBtn.setAttribute("aria-label", video.muted ? "Unmute" : "Mute");
+  }
+
+  playBtn.addEventListener("click", () => {
+    video.muted = false;
+    video.play();
+    wrap.classList.add("is-playing");
+    syncMuteBtn();
+  });
+
+  video.addEventListener("click", () => {
+    if (video.paused) { video.play(); wrap.classList.add("is-playing"); }
+    else { video.pause(); wrap.classList.remove("is-playing"); }
+  });
+
+  if (muteBtn) {
+    muteBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      video.muted = !video.muted;
+      syncMuteBtn();
+    });
+  }
+
+  video.addEventListener("pause", () => wrap.classList.remove("is-playing"));
+  video.addEventListener("play", () => wrap.classList.add("is-playing"));
+  syncMuteBtn();
 }
 
 function bindContactForm() {
@@ -357,7 +478,7 @@ function bindContactForm() {
     } catch {
       btn.textContent = originalText;
       btn.disabled = false;
-      alert("Something went wrong. Please reach us at hello@mumuspikliz.com or call 857-342-2433.");
+      alert("Something went wrong. Please reach us at mumuspikliz@gmail.com or call 857-342-2433.");
     }
   });
 }
